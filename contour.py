@@ -13,7 +13,7 @@ gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 gray = cv2.bitwise_not(gray)
 thresh = cv2.threshold(gray, 0, 255,
 	cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
-cv2.imshow("thresh.png", thresh)
+cv2.imwrite("thresh.png", thresh)
 
 # base line
 
@@ -65,12 +65,13 @@ end = list.index(leftmost)
 interval1 = len(list) - 1 - start
 interval2 = end + 1
 l = []
+print(start,len(cnt))
 l[0:interval1] = list[start : len(cnt)]
 l[interval1:interval2]=list[0:interval2]
 list = l[::-1] 
 
 # cv2.drawContours(image, [cnt[start:len(cnt)]], 0, (0,255,0), 1)
-# cv2.drawContours(image, [cnt[interval1:interval2]], 0, (0,255,0), 1)
+# cv2.drawContours(image, [cnt[0:interval2]], 0, (0,255,0), 1)
 
 cv2.imwrite("contoured.png",image)
 
@@ -96,9 +97,21 @@ for i in range(len(list)):
 # print(list_y)
 maximas = (np.diff(np.sign(np.diff(np.asarray(list_y)))) > 0).nonzero()[0] + 1 # local min
 minimas = (np.diff(np.sign(np.diff(np.asarray(list_y)))) < 0).nonzero()[0] + 1 # local min
-max_min = [[list_x[i],list_y[i]] for i in minimas] + [[list_x[i],list_y[i]] for i in maximas]
-max_min = max_min.sort(key=lambda x:x[0])
+# print([[list_x[i],list_y[i]] for i in maximas] )
+# print([[list_x[i],list_y[i]] for i in minimas] )
+max_min = [[list_x[i],list_y[i]] for i in maximas ]+[[list_x[i],list_y[i]] for i in minimas]
+
+for m in minimas:
+	x,y=[list_x[m],list_y[m]]
+	# cv2.circle(image,(int(x),int(y)), 1, (255, 0, 0), -1)
+
+for m in maximas:
+	x,y=[list_x[m],list_y[m]]
+	# cv2.circle(image,(int(x),int(y)),1, (0, 255, 0), -1)
+
+max_min.sort(key=lambda x:x[0])
 print(max_min)
+# print(max_min)
 	# print(x,y)
 	# cv2.circle(image,(int(x),int(y)), 1, (255, 0, 0), -1)
 	# cv2.line(image,(int(x),int(y)),(int(x),int(y)+200),(0,255,255),2)
@@ -108,26 +121,42 @@ print(max_min)
 	# cv2.circle(image,(int(x),int(y)), 1, (0, 0, 255), -1)
 cv2.imwrite("contoured.png",image)
 
-
-for i in range(len(minimas)):
-	m = minimas[i]
+selected_mins = []
+for m in minimas:
 	x = list_x[m]
 	y = list_y[m]
-	prev_max = max_min.index(x)-1
+	# print(x,y)
+	m_index = max_min.index([x,y])
+	prev_max = m_index-1
 	next_max = prev_max + 2
 	if(prev_max < 0):
 		continue
-	heigth_th = 70
-	width_th = 30
-	if(list_x[next_max]-list_x[prev_max] < width_th ):
+	if(next_max == len(max_min)):
 		continue
-	
-	# print( list_y[prev_max] , th)	
-	if( list_y[prev_max] < heigth_th ):
-		cv2.circle(image,(int(x),int(y)), 1, (0, 0, 255), -1)
-		cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(0,0,255),1)
+	heigth_th = 10
+	width_th = 10
+	if(max_min[next_max][0]-max_min[prev_max][0] < width_th ):
+		continue
+	print( max_min[prev_max][1] , y)	
 
-	
+	if( y -  max_min[prev_max][1] < heigth_th):
+    		continue
+	print( max_min[prev_max][1] , base_line-heigth_th)	
+
+	if( max_min[prev_max][1] < base_line-heigth_th ):
+		# cv2.circle(image,(int(x),int(y)), 1, (0, 0, 255), -1)
+		cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(0,0,255),1)
+		selected_mins.append(m_index)
+min_width_th = 30
+
+# check_for_sad, dad 
+
+
+# check for seen ,sheen
+# for m in selected_mins:
+#     next_min = m + 1
+#     if(max_min[next_m] - max_min[m] < min_width_th )
+# 		continue
 cv2.imwrite("contoured.png",image)
 
 
