@@ -54,7 +54,9 @@ def vertical_transitions(img):
 def get_Regions(img):
     width,height = img.shape
     Region_1 = img[:width//2,:height//2]
-    Region_2 = img[:width//2,height//2+1:]
+    Region_ray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+gray = cv2.bitwise_not(gray)
+thresh = cv2.threshold(gray, 0, 255,2 = img[:width//2,height//2+1:]
     Region_3 = img[width//2+1:,:height//2]
     Region_4 = img[width//2+1:,height//2+1:]
     Regions= [Region_1,Region_2,Region_3,Region_4]
