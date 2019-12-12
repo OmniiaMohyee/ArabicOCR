@@ -2,22 +2,38 @@
 import cv2
 import numpy as np
 from scipy.signal import argrelextrema
-
+import copy
+from PIL import Image
 ## SKEW DETECTION.
 #1- Binarizing the image.
 im_name = "c1.png"
 image = cv2.imread(im_name)
 (ys , xs , _)= image.shape
 
+
+
+image = cv2.resize(image,(xs*6,ys*6), interpolation=cv2.INTER_AREA)
+cv2.imwrite("resized.png", image)
+
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 gray = cv2.bitwise_not(gray)
+out = open('out.txt','w')
+
+bi = copy.copy(gray)
+for i in range(xs):
+	for j in range(ys):
+		if(bi[i][j] > 60):     
+			bi[i][j] = 255
 thresh = cv2.threshold(gray, 0, 255,
 	cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+# thresh = cv2.blur(thresh,(2,2))
 cv2.imwrite("thresh.png", thresh)
-
+cv2.imwrite("bin.png", bi)
+# thresh =bi
 # base line
 
 h_line_hist = np.count_nonzero(thresh,axis=1)
+v_line_hist = np.count_nonzero(thresh,axis=0)
 
 line_index = np.argmax(h_line_hist)
 max = np.amax(h_line_hist)
@@ -25,7 +41,8 @@ max = np.amax(h_line_hist)
 cv2.imwrite("bl_line.png",thresh)
 
 # edges 
-c1_edges = cv2.Canny(thresh,150,200)
+
+c1_edges = cv2.Canny(thresh,0,500)
 cv2.imwrite("edged.png",c1_edges)
 
 # countour 
@@ -60,22 +77,25 @@ for i in range(0,len(cnt)):
     y = cnt[i][0][1]
     list.append((x,y))
 # print(list)
-start = list.index(rightmost)
-end = list.index(leftmost)
-interval1 = len(list) - 1 - start
-interval2 = end + 1
-l = []
-print(start,len(cnt))
-l[0:interval1] = list[start : len(cnt)]
-l[interval1:interval2]=list[0:interval2]
-list = l[::-1] 
-
-# cv2.drawContours(image, [cnt[start:len(cnt)]], 0, (0,255,0), 1)
+right = list.index(rightmost)
+left = list.index(leftmost)
+top = list.index(topmost)
+bottom = list.index(bottommost)
+l=[]
+print(base_line)
+for i in range(0,len(cnt)):
+	x = cnt[i][0][0]
+	y = cnt[i][0][1]
+	if y <= base_line :
+		l.append([x,y])
+cv2.drawContours(image, [np.asarray(l)], 0, (0,255,0), 1)
 # cv2.drawContours(image, [cnt[0:interval2]], 0, (0,255,0), 1)
 
 cv2.imwrite("contoured.png",image)
 
-
+l.sort(key=lambda x:x[0])
+list=l
+# print(defects)
 list_x=[]
 list_y=[]
 # list_x = list[:,0]
@@ -86,10 +106,10 @@ last_y = 0
 for i in range(len(list)):
 	y= list[i][1]
 	x= list[i][0]
-	if(y != last_y ):
-		list_x.append(x)
-		list_y.append(y)
-	last_y = y
+	# if(y != last_y ):
+	list_x.append(x)
+	list_y.append(y)
+	# last_y = y
 	# cv2.circle(image,(int(x),int(y)), 1, (0, 0, 255), -1)
 
 
@@ -101,15 +121,28 @@ minimas = (np.diff(np.sign(np.diff(np.asarray(list_y)))) < 0).nonzero()[0] + 1 #
 # print([[list_x[i],list_y[i]] for i in minimas] )
 max_min = [[list_x[i],list_y[i]] for i in maximas ]+[[list_x[i],list_y[i]] for i in minimas]
 
+min = []
+max = []
+
 for m in minimas:
 	x,y=[list_x[m],list_y[m]]
+	if(y < base_line):
+		continue
 	# cv2.circle(image,(int(x),int(y)), 1, (255, 0, 0), -1)
+	min.append(m)
 
 for m in maximas:
 	x,y=[list_x[m],list_y[m]]
-	# cv2.circle(image,(int(x),int(y)),1, (0, 255, 0), -1)
+	cv2.circle(image,(int(x),int(y)),1, (255, 255, 0), -1)
+cv2.circle(image,(47,66),1, (0, 255, 255), -1)
+cv2.circle(image,(60,60),1, (0, 255, 255), -1)
+cv2.circle(image,(66,54),1, (0, 255, 255), -1)
+cv2.circle(image,(77,65),1, (0, 255, 255), -1)
+cv2.circle(image,(41,60),1, (0, 255, 255), -1)
+cv2.circle(image,(36,60),1, (0, 255, 255), -1)
+cv2.circle(image,(35,48),1, (0, 255, 255), -1)
 
-max_min.sort(key=lambda x:x[0])
+# max_min.sort(key=lambda x:x[0])
 print(max_min)
 # print(max_min)
 	# print(x,y)
@@ -122,7 +155,7 @@ print(max_min)
 cv2.imwrite("contoured.png",image)
 
 selected_mins = []
-for m in minimas:
+for m in min:
 	x = list_x[m]
 	y = list_y[m]
 	# print(x,y)
@@ -133,20 +166,14 @@ for m in minimas:
 		continue
 	if(next_max == len(max_min)):
 		continue
-	heigth_th = 10
-	width_th = 10
-	if(max_min[next_max][0]-max_min[prev_max][0] < width_th ):
+	heigth_th = 1
+	width_th = 2
+	if(y < base_line):
 		continue
-	print( max_min[prev_max][1] , y)	
-
-	if( y -  max_min[prev_max][1] < heigth_th):
-    		continue
-	print( max_min[prev_max][1] , base_line-heigth_th)	
-
-	if( max_min[prev_max][1] < base_line-heigth_th ):
+	
 		# cv2.circle(image,(int(x),int(y)), 1, (0, 0, 255), -1)
-		cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(0,0,255),1)
-		selected_mins.append(m_index)
+	cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(0,0,255),1)
+	selected_mins.append(m_index)
 min_width_th = 30
 
 # check_for_sad, dad 
