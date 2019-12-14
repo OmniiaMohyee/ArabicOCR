@@ -21,14 +21,3 @@ label_encoder = preprocessing.LabelEncoder()
 df['code']= label_encoder.fit_transform(df['char']) # Encode labels in column 'char
 df.to_csv('dataset.csv')
 # print(df) 
-
-# ======================== read scanned file =======================================
-
-# pre-process image
-
-# segment image into characters
-
-# for each character:
-
-    #extract feature vector 
-    # add it to the csv file --> here named data set
