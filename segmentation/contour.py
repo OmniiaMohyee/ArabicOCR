@@ -1,4 +1,3 @@
-
 import cv2
 import numpy as np
 from scipy.signal import argrelextrema
@@ -223,7 +222,3 @@ for i in range(len(segmentation_points)):
 	prev_point = segment
 
 cv2.imwrite("contoured.png",image)
-
-
-
-
