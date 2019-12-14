@@ -6,7 +6,7 @@ import copy
 from PIL import Image
 ## SKEW DETECTION.
 #1- Binarizing the image.
-im_name = "c1.png"
+im_name = "c1.PNG"
 image = cv2.imread(im_name)
 (ys , xs , _)= image.shape
 
@@ -147,12 +147,12 @@ print(max_min)
 # print(max_min)
 	# print(x,y)
 	# cv2.circle(image,(int(x),int(y)), 1, (255, 0, 0), -1)
-	# cv2.line(image,(int(x),int(y)),(int(x),int(y)+200),(0,255,255),2)
+	# cv2.line(image,(inthttps://github.com/OmniiaMohyee/ArabicOCR(x),int(y)),(int(x),int(y)+200),(0,255,255),2)
  
 
 	# print(x,y)
 	# cv2.circle(image,(int(x),int(y)), 1, (0, 0, 255), -1)
-cv2.imwrite("contoured.png",image)
+#cv2.imwrite("contoured.png",image)
 
 selected_mins = []
 for m in min:
