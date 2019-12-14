@@ -1,4 +1,3 @@
-
 import cv2
 import numpy as np
 from scipy.signal import argrelextrema
@@ -6,7 +5,7 @@ import copy
 from PIL import Image
 ## SKEW DETECTION.
 #1- Binarizing the image.
-im_name = "c1.PNG"
+im_name = "c1.png"
 image = cv2.imread(im_name)
 (ys , xs , _)= image.shape
 
@@ -82,19 +81,29 @@ left = list.index(leftmost)
 top = list.index(topmost)
 bottom = list.index(bottommost)
 l=[]
-print(base_line)
+splitting_index = 0
+# print(left)
+k=0
 for i in range(0,len(cnt)):
 	x = cnt[i][0][0]
 	y = cnt[i][0][1]
+	if x == leftmost[0]:
+		splitting_index = k
+
 	if y <= base_line :
+		k+=1
 		l.append([x,y])
-cv2.drawContours(image, [np.asarray(l)], 0, (0,255,0), 1)
-# cv2.drawContours(image, [cnt[0:interval2]], 0, (0,255,0), 1)
+		# print(x,leftmost[0])
+list =l[splitting_index+1:len(l)] + l[0:splitting_index] 
+# print(splitting_index,len(l))
+# cv2.drawContours(image, [np.asarray(l[0:splitting_index])], 0, (0,255,0), 1)
+# cv2.drawContours(image,[np.asarray(l[splitting_index+1:len(l)])], 0, (0,255,0), 1)
 
 cv2.imwrite("contoured.png",image)
 
-l.sort(key=lambda x:x[0])
-list=l
+list=list[::-1]
+# cv2.drawContours(image,[np.asarray(list[0:50])], 0, (0,255,0), 1)
+
 # print(defects)
 list_x=[]
 list_y=[]
@@ -103,15 +112,18 @@ list_y=[]
 # indexes = np.unique(list_x, return_index=True)[1]
 # list_x = [list_x[index] for index in sorted(indexes)]
 last_y = 0
-for i in range(len(list)):
-	y= list[i][1]
-	x= list[i][0]
-	# if(y != last_y ):
-	list_x.append(x)
-	list_y.append(y)
-	# last_y = y
-	# cv2.circle(image,(int(x),int(y)), 1, (0, 0, 255), -1)
 
+l=copy.copy(list)
+for i in range(len(l)):
+	y= l[i][1]
+	x= l[i][0]
+	if(y != last_y ):
+		list_x.append(x)
+		list_y.append(y)
+	else:
+		list.remove([x,y])
+	last_y = y
+	# cv2.circle(image,(int(x),int(y)), 1, (0, 0, 255), -1)
 
 # minimas = argrelextrema(np.asarray(list_x), np.less)
 # print(list_y)
@@ -119,73 +131,94 @@ maximas = (np.diff(np.sign(np.diff(np.asarray(list_y)))) > 0).nonzero()[0] + 1 #
 minimas = (np.diff(np.sign(np.diff(np.asarray(list_y)))) < 0).nonzero()[0] + 1 # local min
 # print([[list_x[i],list_y[i]] for i in maximas] )
 # print([[list_x[i],list_y[i]] for i in minimas] )
-max_min = [[list_x[i],list_y[i]] for i in maximas ]+[[list_x[i],list_y[i]] for i in minimas]
 
-min = []
-max = []
+min_list = []
+max_list = []
+
 
 for m in minimas:
 	x,y=[list_x[m],list_y[m]]
+	# print(base_line,y)
 	if(y < base_line):
+		list.remove([x,y])
 		continue
-	# cv2.circle(image,(int(x),int(y)), 1, (255, 0, 0), -1)
-	min.append(m)
+	cv2.circle(image,(int(x),int(y)), 1, (255, 0, 0), -1)
+	min_list.append([x,y])
+
+for i in range(len(list)) :
+	x = list[i][0]
+	y = list[i][1]
+	# cv2.circle(image,(int(x),int(y)),1, (0, 255,255), -1)
+    
 
 for m in maximas:
 	x,y=[list_x[m],list_y[m]]
+	max_list.append([x,y])
 	cv2.circle(image,(int(x),int(y)),1, (255, 255, 0), -1)
-cv2.circle(image,(47,66),1, (0, 255, 255), -1)
-cv2.circle(image,(60,60),1, (0, 255, 255), -1)
-cv2.circle(image,(66,54),1, (0, 255, 255), -1)
-cv2.circle(image,(77,65),1, (0, 255, 255), -1)
-cv2.circle(image,(41,60),1, (0, 255, 255), -1)
-cv2.circle(image,(36,60),1, (0, 255, 255), -1)
-cv2.circle(image,(35,48),1, (0, 255, 255), -1)
-
+min_max=[]
+for i in range(len(list)):
+	list_element=list[i]
+	try :
+		max_value = max_list.index(list_element)
+		min_max.append(list_element)
+	except:
+		pass
+	try:
+		min_value = min_list.index(list_element)
+		min_max.append(list_element)
+	except:
+		pass
+print(min_max)
+print(max_list)
+print(min_list)
 # max_min.sort(key=lambda x:x[0])
-print(max_min)
-# print(max_min)
-	# print(x,y)
-	# cv2.circle(image,(int(x),int(y)), 1, (255, 0, 0), -1)
-	# cv2.line(image,(inthttps://github.com/OmniiaMohyee/ArabicOCR(x),int(y)),(int(x),int(y)+200),(0,255,255),2)
- 
-
-	# print(x,y)
-	# cv2.circle(image,(int(x),int(y)), 1, (0, 0, 255), -1)
-#cv2.imwrite("contoured.png",image)
-
-selected_mins = []
-for m in min:
-	x = list_x[m]
-	y = list_y[m]
-	# print(x,y)
-	m_index = max_min.index([x,y])
-	prev_max = m_index-1
-	next_max = prev_max + 2
-	if(prev_max < 0):
-		continue
-	if(next_max == len(max_min)):
-		continue
-	heigth_th = 1
-	width_th = 2
-	if(y < base_line):
-		continue
-	
-		# cv2.circle(image,(int(x),int(y)), 1, (0, 0, 255), -1)
-	cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(0,0,255),1)
-	selected_mins.append(m_index)
-min_width_th = 30
-
-# check_for_sad, dad 
-
-
-# check for seen ,sheen
-# for m in selected_mins:
-#     next_min = m + 1
-#     if(max_min[next_m] - max_min[m] < min_width_th )
-# 		continue
+# print(min_max)
 cv2.imwrite("contoured.png",image)
 
+selected_mins = []
+splitting_points =[]
+char_width = []
+m_pairs =[]
+for m in range(len(min_list)):
+	[x,y] = min_list[m]
+	# print([x,y])
+	index = min_max.index([x,y])
+	prev = min_max[index-1]
+	# cv2.circle(image,(prev[0],prev[1]), 1, (0, 0, 255), -1)
+ 
+	# print(max)
+	# print(prev)
+	if prev in max_list :		
+		splitting_points.append([x,y])
+		# cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(0,0,255),1)
+prev_point = leftmost
+avg_char_width = 30
+avg_char_area = 600
+segmentation_points = []
+for s in splitting_points :
+	x = s[0]
+	y = s[1]
+	diff = x - prev_point[0]
+	index = min_max.index([x,y])
+	prev = min_max[index -1 ]
+	area = (base_line - prev[1])*(diff)
+	print(area)
+	# print(diff)
+	if(diff >= avg_char_width and  area > avg_char_area):
+		segmentation_points.append([x,y])
+		cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(0,0,255),1)
+		prev_point = s
+prev_point = leftmost
+for i in range(len(segmentation_points)):
 
+	segment = segmentation_points[i]
+	# index = min_max.index(segment)
+	# prev = min_max[index -1 ]
+	# char = image[prev[1]:bottommost[1],prev_point[0]:segment[0]]
+	char = image[:,prev_point[0]:segment[0]]
+	print(prev_point[0],segment[0])
+	print(char)
+	cv2.imwrite(str(i+1)+".png",char)
+	prev_point = segment
 
-
+cv2.imwrite("contoured.png",image)
