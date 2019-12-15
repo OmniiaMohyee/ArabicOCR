@@ -241,4 +241,4 @@ def segment(image):
 			prev_point = segment
 
 		cv2.imwrite("contoured.png",image)
-segment(image)
+# segment(image)
