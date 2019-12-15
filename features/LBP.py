@@ -24,7 +24,7 @@ def LBP(img,r,b):  #r (radius) & b(# of neighbours) are  hyper parameters
 
 def main():
     #read image and convert it to binary 
-    img = cv2.imread("haa.png")
+    img = cv2.imread("../tests/haa.png")
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     gray = cv2.bitwise_not(gray) #find countours need character to be white and background black
     thresh = cv2.threshold(gray, 127,255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
