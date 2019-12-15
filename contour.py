@@ -10,19 +10,21 @@ image = cv2.imread(im_name)
 
 
 def segment(image):
-	(ys , xs , _)= image.shape
-	image = cv2.resize(image,(xs*5,ys*5), interpolation=cv2.INTER_AREA)
-	cv2.imwrite("resized.png", image)
+	# (ys , xs , _)= image.shape
+	# image = cv2.resize(image,(xs*5,ys*5), interpolation=cv2.INTER_AREA)
+	# cv2.imwrite("resized.png", image)  took those lines outside
 
-	gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-	gray = cv2.bitwise_not(gray)
-	thresh = cv2.threshold(gray, 0, 255,
-		cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+	# gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+	# gray = cv2.bitwise_not(gray)
+	# thresh = cv2.threshold(gray, 0, 255,
+	# 	cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+	thresh = image #in our case
 	# thresh = cv2.blur(thresh,(2,2))
 	# cv2.imwrite("thresh.png", thresh)
 	# cv2.imwrite("bin.png", bi)
 	# thresh =bi
 	# base line
+	print("len(thresh)", len(thresh))
 	h_line_hist = np.count_nonzero(thresh,axis=1)
 	v_line_hist = np.count_nonzero(thresh,axis=0)
 
