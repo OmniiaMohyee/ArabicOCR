@@ -6,7 +6,7 @@ import copy
 from PIL import Image
 ## SKEW DETECTION.
 #1- Binarizing the image.
-im_name = "c1.png"
+im_name = "madrasa.png"
 image = cv2.imread(im_name)
 (ys , xs , _)= image.shape
 
@@ -50,7 +50,7 @@ cv2.imwrite("edged.png",c1_edges)
 contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 areas = [cv2.contourArea(x) for x in contours]
 i = np.argmax(areas)
-cnt = contours[i]
+cnt = contours[1]
 epsilon = 0.1*cv2.arcLength(cnt,True)
 approx = cv2.approxPolyDP(cnt,epsilon,True)
 
