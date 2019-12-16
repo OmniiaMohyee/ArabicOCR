@@ -5,7 +5,7 @@ import copy
 from PIL import Image
 ## SKEW DETECTION.
 #1- Binarizing the image.
-im_name = "tarbya.png"
+im_name = "hadeesa.png"
 image = cv2.imread(im_name)
 
 
@@ -58,7 +58,7 @@ def segment(image):
 		segmentation_points = []
 
 		cnt = contours[j]
-		print(areas[j])
+		# print(areas[j])
 		epsilon = 0.1*cv2.arcLength(cnt,True)
 		approx = cv2.approxPolyDP(cnt,epsilon,True)
 		# print(cnt)
@@ -92,9 +92,14 @@ def segment(image):
 		splitting_index = 0
 		# print(left)
 		k=0
+		right_reached =False 
 		for i in range(0,len(cnt)):
 			x = cnt[i][0][0]
 			y = cnt[i][0][1]
+			if x == rightmost[0]:
+				right_reached = True
+			if(splitting_index != 0 and not right_reached):
+				continue
 			if x == leftmost[0]:
 				splitting_index = k
 			if y <= base_line and [x,y] not in l:
@@ -154,10 +159,10 @@ def segment(image):
 			# cv2.circle(image,(int(x),int(y)), 1, (255, 0, 0), -1)
 			min_list.append([x,y])
 			
-		threshold = 0
+		threshold = 5
 		for m in maximas:
 			x,y=[list_x[m],list_y[m]]
-			if(y < base_line - threshold):
+			if(y < base_line ):
 				max_list.append([x,y])
 				# cv2.circle(image,(int(x),int(y)),1, (255, 255, 255), -1)
 		min_max=[]
@@ -209,7 +214,7 @@ def segment(image):
 				# cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(0,0,255),1)
 		prev_point = leftmost
 		prev_prev= leftmost
-		avg_char_width = 25
+		avg_char_width = 14
 		avg_char_area = 300
 		x,y =leftmost
 		segmentation_points.append([x,y])
@@ -239,32 +244,35 @@ def segment(image):
 			step = 5
 			print(diff_min)
 			if(diff_min >= avg_char_width ):
-				cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(0,0,255),1)
+				# cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(0,0,255),1)
 				segmentation_points.append([x,y])
 				prev_prev = prev_point
-				prev_point = [x,y]
+				prev_point = s
 			else:
-				# cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(0,255,255),1)
+				cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(0,255,255),1)
 				if(prev_point in segmentation_points):
 					segmentation_points.remove(prev_point)
+				prev_point = s
 		prev_point = leftmost
 		num_points = len(segmentation_points)
-		if leftmost not in segmentation_points:
+		try:
 			x,y =leftmost
+			segmentation_points.index([x,y])
+		except:
 			segmentation_points = [[x,y]] + segmentation_points[0:num_points]
-			print(leftmost)
-			print(segmentation_points)
+			# print(segmentation_points)
 			num_points+=1
-		# print(leftmost)
+		print(leftmost)
+		print(segmentation_points)
 		try:
 			x,y =rightmost
 			segmentation_points.index([x,y])
 		except:
 			segmentation_points.append([x,y])
-			print(rightmost)
-			print(segmentation_points)
+			# print(rightmost)
+			# print(segmentation_points)
 			num_points+=1
-		for i in range(num_points):
+		for i in range(1,num_points):
 
 			# index = min_max.index(segment)
 			# prev = min_max[index -1 ]
@@ -274,18 +282,18 @@ def segment(image):
 			# 	segmentation_points[i][0]=rightmost[0]
 			# 	segmentation_points[i][1]=rightmost[1]
 			segment = segmentation_points[i]
-			print(segment)
+			# print(segment)
 			x = segment[0]
 			y = segment[1]
-			cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(0,0,255),1)
-			if i > 0  and prev_point[0]!= segment[0]:
+			if prev_point[0]!= segment[0]:
+				cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(0,0,255),1)
 				char = image[:,prev_point[0]+1:segment[0]+1]
 				chars.append(char)
 			# print(prev_point[0],segment[0])
 			# print(char)
-				cv2.imwrite(str(i+1)+".png",char)
+				# cv2.imwrite('contour_'+str(j+1)+'char_'+str(i+1)+".png",char)
 			prev_point = segment
-
+	print(len(chars))
 	cv2.imwrite("contoured.png",image)
 	return chars
 cs = segment(image)
