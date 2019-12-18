@@ -64,6 +64,10 @@ def get_Regions(img):
     # cv2.imshow("r4",Region_4)
     return Regions
 
+def getConnectivety(img):
+    output = cv2.connectedComponentsWithStats(img, 8)
+    print(output)
+    # return output[0]
 def getFeatureVector(cropped_img):
     FeatureVector=[]
     width,height = cropped_img.shape
@@ -95,6 +99,7 @@ if __name__=="__main__":
     cropped_img = crop_image(bw_img)
     FeatureVector= getFeatureVector(cropped_img)
     print(FeatureVector)
-
+    getConnectivety(cropped_img)
+    
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
