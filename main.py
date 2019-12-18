@@ -34,8 +34,8 @@ for data_point in data_points:
             text.append(word) 
     print('actual number of words = ', len(text))    
     # read scanned file 
-    clean_img = preprocess.preproc(data_point) # pre-process image
-    words, _ = word_segment.word_seg(clean_img) # segment image into characters
+    clean_img,clean_image_not_bin = preprocess.preproc(data_point) # pre-process image
+    words = word_segment.word_seg(clean_img,clean_image_not_bin) # segment image into characters
     print("num of segmented words = ", len(words))
     for word in words:
         scanned_chars_count = 0
@@ -78,6 +78,8 @@ for data_point in data_points:
             df['code']= label_encoder.fit_transform(df['char']) # Encode labels in column 'char
             df.to_csv('dataset.csv')
         words_iter += 1
+        if words_iter >= len(text):
+            break
         # break
 print("rights = ", right)
 print("wrong = ", wrong)
@@ -85,7 +87,7 @@ print("wrong = ", wrong)
 # print("number of segmented character is right Yaaaaa :)")
 #             #add to csv file
 #             for c in text[words_iter]:
-#                 writer.writerow({'char': c})
+#                 writer.writefrow({'char': c})
 #             csv_file.close()
 #             # encode character labels into numbers
 #             df = pd.read_csv('dataset.csv')

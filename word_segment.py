@@ -1,9 +1,11 @@
 import cv2
 import numpy as np
 import copy
+from preprocess import *
 
-def line_segment(image):
+def line_segment(image,not_bin_image):
     im = image.copy()
+    im_2 = not_bin_image.copy()
     bounds = []
     horiz_hist = np.count_nonzero(image, axis=1)
     i = 0
@@ -17,30 +19,40 @@ def line_segment(image):
                     count +=1
                 else:
                     break
-            im[i+int(count/2),:] = 255
-            bounds.append(i+int(count/2))
+            if(count > 4):
+                im_2[i+int(count/2),:] = 0
+                bounds.append(i+int(count/2))
             i+=j
         else:
             i+=1
     line = 1
     result_lines = []
+    result_lines_not_bin = []
     for i in range(len(bounds)-1):
-        result = im[bounds[i]+1:bounds[i+1],:]
-        #cv2.imwrite("line"+str(line)+".png",result)
-        result_lines.append(result)
+        result_lines.append(im[bounds[i]+1:bounds[i+1],:])
+        
+        result_lines_not_bin.append(im_2[bounds[i]+1:bounds[i+1],:])
+        cv2.imwrite("line"+str(line)+".png",im_2[bounds[i]+1:bounds[i+1],:])
         line+=1
-    return result_lines,line-1
+    return result_lines,result_lines_not_bin,line-1
 
-def word_segment(image,threshold):
-    
+def word_segment(image,not_bin_image,threshold):
+    #(ys , xs , _)= image.shape
+	#image_ = cv2.resize(image,(xs*5,ys*5), interpolation=cv2.INTER_AREA)
+    # not_bin_image = cv2.resize(not_bin_image, (xs*5, ys*5), interpolation=cv2.INTRER_AREA)
+    # cv2.imwrite("linr_resized.png",not_bin_image)
     im = image.copy()
+    im_2 = not_bin_image.copy()
+
+    (ys,xs)=im.shape
+    im = cv2.resize(im,(xs*5,ys*5), interpolation= cv2.INTER_AREA)
+    im_2 = cv2.resize(im_2,(xs*5,ys*5), interpolation= cv2.INTER_AREA)
     vert_hist = np.count_nonzero(im, axis=0)
     bounds = []
     k = 0
     while(k<len(vert_hist)): 
-        
+        count = 0
         if(vert_hist[k] == 0):
-            count = 0
             j = 0
             while(k+j <len(vert_hist)):
                 if(vert_hist[k+j]==0):
@@ -48,8 +60,10 @@ def word_segment(image,threshold):
                     count +=1
                 else:
                     break
+            # print("count = ", count)
             if(count >= threshold):
-                image[:,k+int(count/2)] = 255
+                im[:,k+int(count/2)] = 255
+                im_2[:,k+int(count/2)] = 0 
                 bounds.append(k+int(count/2))
             k+=j
         else:
@@ -58,8 +72,9 @@ def word_segment(image,threshold):
     word = 1
     result_words = []
     for i in range(len(bounds)-1):
-        result = im[:,bounds[i]+1:bounds[i+1]]
-        # print(result)
+        #result = im[:,bounds[i]+1:bounds[i+1]]
+        result = im_2[:,bounds[i]+1:bounds[i+1]]
+        
         #cv2.imwrite("word"+str(word)+".png",result)
         result_words.append(result)
         word += 1
@@ -67,14 +82,18 @@ def word_segment(image,threshold):
     return result_words,word-1
 
 
-def word_seg(clean_img):
-    lines,size_lines = line_segment(clean_img)
+def word_seg(clean_img,clean_img_not_bin):
+    
+    lines, not_bin_lines, size_lines = line_segment(clean_img,clean_img_not_bin)
+    print(size_lines)
     all_words = []
-    number_words = 0
-    print("number of lines = ", size_lines)
+    count  = 0 
+    # words,size_words = word_segment(lines[0],not_bin_lines[0],5)
     for j in range(size_lines):
-        words,size_words = word_segment(lines[j],0)# 1--> threshold : hyperparamter
-        words = words[::-1]
+        words,size_words = word_segment(lines[j],not_bin_lines[j],5)# 1--> threshold : hyperparamter
         all_words += words
-        number_words += size_words
-    return all_words,number_words #--> to be actually all words
+        # for i in range(size_words):
+            # cv2.imwrite("word"+str(count)+".png",words[i])
+            
+            #count += 1
+    return all_words

@@ -4,7 +4,7 @@ import cv2
 
 # 1.exact width and height
 def crop_image(img):
-    img_width, img_height = img.shape
+    img_height, img_width = img.shape
     first_row = img_height
     first_col = img_width
     last_row = 0
@@ -24,7 +24,7 @@ def crop_image(img):
 def get_black_and_white(img):
     black_pixels = 0
     white_pixels = 0
-    width,height = img.shape
+    height, width = img.shape
     for i in range (width):
         for j in range(height):
             if (img[i][j]==0):
@@ -35,7 +35,7 @@ def get_black_and_white(img):
 # 3. horizontal transitions
 def horizontal_transitions(img):
     horizontal =0
-    width,height = img.shape
+    height, width = img.shape
     for i in range (width):
         for j in range(1,height):
             if (img[i][j] != img[i][j-1]):
@@ -44,7 +44,7 @@ def horizontal_transitions(img):
 # 4. Vertical transitions
 def vertical_transitions(img):
     vertical = 0
-    width,height = img.shape
+    height, width = img.shape
     for j in range (height):
         for i in range (1,width):
             if (img[i][j] != img[i-1][j]):
@@ -58,15 +58,18 @@ def get_Regions(img):
     Region_3 = img[width//2+1:,:height//2]
     Region_4 = img[width//2+1:,height//2+1:]
     Regions= [Region_1,Region_2,Region_3,Region_4]
-    # cv2.imshow("r1",Region_1)
-    # cv2.imshow("r2",Region_2)
-    # cv2.imshow("r3",Region_3)
-    # cv2.imshow("r4",Region_4)
+    cv2.imshow("r1",Region_1)
+    cv2.imshow("r2",Region_2)
+    cv2.imshow("r3",Region_3)
+    cv2.imshow("r4",Region_4)
     return Regions
 
 def getFeatureVector(cropped_img):
+    cv2.imwrite("cropped_img.png", cropped_img)
     FeatureVector=[]
-    width,height = cropped_img.shape
+    height, width = cropped_img.shape
+    char_area = np.sum(cropped_img == 0) # char size/ area #where the foregroung is the black
+    FeatureVector.append(char_area)
     FeatureVector.append(height/width) #1. height/width
     b,w = get_black_and_white(cropped_img)
     FeatureVector.append(b/w) #2.black/white
@@ -89,7 +92,7 @@ def getFeatureVector(cropped_img):
 
 if __name__=="__main__":
     #read image
-    img = cv2.imread('t2214.png')
+    img = cv2.imread('../tests/t2214.png')
     img_grey = cv2.cvtColor(img,cv2.COLOR_RGB2GRAY)
     _, bw_img = cv2.threshold(img_grey,127,255,cv2.THRESH_BINARY) #convert to binary
     cropped_img = crop_image(bw_img)

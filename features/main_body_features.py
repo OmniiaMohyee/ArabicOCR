@@ -37,11 +37,11 @@ def crop(gray):
 
     biggest_contour, _ =  find_biggest_contour(edges)
 
-    # contours_poly = [None]*len(biggest_contour)
+    contours_poly = [None]*len(biggest_contour)
     # boundRect = [None]*len(biggest_contour)
     for i, c in enumerate(biggest_contour):
         contours_poly[i] = cv2.approxPolyDP(c, 3, True)
-        boundRect[i] = cv2.boundingRect(contours_poly[i])
+        # boundRect[i] = cv2.boundingRect(contours_poly[i])
           
     drawing = np.zeros((edges.shape[0], edges.shape[1], 3), dtype=np.uint8)
     
@@ -51,12 +51,12 @@ def crop(gray):
     #     cv2.rectangle(drawing, (int(boundRect[i][0]), int(boundRect[i][1])), \
     #       (int(boundRect[i][0]+boundRect[i][2]), int(boundRect[i][1]+boundRect[i][3])), color, 2)
     contours_poly = cv2.approxPolyDP(c, 3, True)
-    boundRect = cv2.boundingRect(contours_poly[i])
+    # boundRect = cv2.boundingRect(contours_poly[i])
     i = 3
     color = (rng.randint(0,256), rng.randint(0,256), rng.randint(0,256))
     cv2.drawContours(drawing, contours_poly, i, color)
-    cv2.rectangle(drawing, (int(boundRect[i][0]), int(boundRect[i][1])), \
-        (int(boundRect[i][0]+boundRect[i][2]), int(boundRect[i][1]+boundRect[i][3])), color, 2)
+    # cv2.rectangle(drawing, (int(boundRect[i][0]), int(boundRect[i][1])), \
+    #     (int(boundRect[i][0]+boundRect[i][2]), int(boundRect[i][1]+boundRect[i][3])), color, 2)
     
     cv2.imshow('Contours', drawing)
     # cv2.imshow("img",cropped_img)
@@ -64,20 +64,20 @@ def crop(gray):
     cv2.destroyAllWindows() 
 
 
-def main_body_feat(cropped_img):
-    c_area = np.sum(cropped_img == 1)
+def main_body_feat(cropped_img):  #must be cropped first
+    char_area = np.sum(cropped_img == 1)
     # for i in range (4):
     #     print('x')
 
 
 def main():
     #read image and convert it to binary 
-    img = cv2.imread("../tests/haa.png")
+    img = cv2.imread("../tests/b.png")
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     gray = cv2.bitwise_not(gray) #find countours need character to be white and background black
     thresh = cv2.threshold(gray, 127,255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
-    # cropped_img = crop_image(thresh)
-    cropped_img =  crop(gray)
-    main_body_feat(cropped_img)
+    # cv2.imwrite("image.png", gray)
+    cropped_img =  crop_image(gray)
+    main_body_feat(cropped_img) 
 
 main()
