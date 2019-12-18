@@ -7,12 +7,13 @@ import copy
  
 def read_image(image_name):
     image = cv2.imread(image_name)
+    cv2.imwrite("original_word.png", image)
     return image
 
 def binarize(image):
     # ys , xs, _ = image.shape
-    # resized_img = cv2.resize(image,(xs*5,ys*5), interpolation=cv2.INTER_AREA)
-    # cv2.imwrite("resized.png", resized_img)
+    # image = cv2.resize(image,(xs*5,ys*5), interpolation=cv2.INTER_AREA)
+    # cv2.imwrite("resized.png", image)
     image_gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
     image_gray = cv2.bitwise_not(image_gray)
     image_thresholded = cv2.threshold(image_gray, 0, 255, cv2.THRESH_BINARY| cv2.THRESH_OTSU)[1]

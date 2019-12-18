@@ -38,8 +38,9 @@ def word_segment(image,threshold):
     bounds = []
     k = 0
     while(k<len(vert_hist)): 
-        count = 0
+        
         if(vert_hist[k] == 0):
+            count = 0
             j = 0
             while(k+j <len(vert_hist)):
                 if(vert_hist[k+j]==0):
@@ -47,7 +48,7 @@ def word_segment(image,threshold):
                     count +=1
                 else:
                     break
-            if(count > threshold):
+            if(count >= threshold):
                 image[:,k+int(count/2)] = 255
                 bounds.append(k+int(count/2))
             k+=j
@@ -70,8 +71,10 @@ def word_seg(clean_img):
     lines,size_lines = line_segment(clean_img)
     all_words = []
     number_words = 0
+    print("number of lines = ", size_lines)
     for j in range(size_lines):
-        words,size_words = word_segment(lines[j],1)# 1--> threshold : hyperparamter
-        all_words.append(words)
+        words,size_words = word_segment(lines[j],0)# 1--> threshold : hyperparamter
+        words = words[::-1]
+        all_words += words
         number_words += size_words
-        return all_words[0],number_words #--> to be actually all words
+    return all_words,number_words #--> to be actually all words
