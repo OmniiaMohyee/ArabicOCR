@@ -296,4 +296,4 @@ def segment(image):
 	print(len(chars))
 	cv2.imwrite("contoured.png",image)
 	return chars
-cs = segment(image)
+# cs = segment(image)
