@@ -68,6 +68,10 @@ def word_segment(image,threshold):
 
 def word_seg(clean_img):
     lines,size_lines = line_segment(clean_img)
+    all_words = []
+    number_words = 0
     for j in range(size_lines):
         words,size_words = word_segment(lines[j],1)# 1--> threshold : hyperparamter
-        return words,size_words
+        all_words.append(words)
+        number_words += size_words
+        return all_words[0],number_words #--> to be actually all words

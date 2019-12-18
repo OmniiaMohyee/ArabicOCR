@@ -4,7 +4,7 @@ import cv2
 
 # 1.exact width and height
 def crop_image(img):
-    img_width, img_height = img.shape
+    img_height, img_width = img.shape
     first_row = img_height
     first_col = img_width
     last_row = 0
@@ -52,11 +52,9 @@ def vertical_transitions(img):
     return vertical
 
 def get_Regions(img):
-    width,height = img.shape
+    height, width = img.shape
     Region_1 = img[:width//2,:height//2]
-    Region_ray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-# gray = cv2.bitwise_not(gray)
-# thresh = cv2.threshold(gray, 0, 255,2 = img[:width//2,height//2+1:]
+    Region_2 = img[:width//2,height//2+1:]
     Region_3 = img[width//2+1:,:height//2]
     Region_4 = img[width//2+1:,height//2+1:]
     Regions= [Region_1,Region_2,Region_3,Region_4]
@@ -83,20 +81,26 @@ def getFeatureVector(cropped_img):
         black.append(b)
         white.append(w)
     for i in range (4):
-        FeatureVector.append(black[i]/white[i])
+        if white[i] == 0:
+            FeatureVector.append(1) #this 1 is just a fatea
+        else:
+            FeatureVector.append(black[i]/white[i])
     for i in range(3):
         for j in range(i+1,4):
-            FeatureVector.append(black[i]/black[j])
+            if black[j] == 0:
+                FeatureVector.append(1) #this 1 is just a fatea
+            else:
+                FeatureVector.append(black[i]/black[j])
     return FeatureVector
 
-if __name__=="__main__":
-    #read image
-    img = cv2.imread('t2214.png')
-    img_grey = cv2.cvtColor(img,cv2.COLOR_RGB2GRAY)
-    _, bw_img = cv2.threshold(img_grey,127,255,cv2.THRESH_BINARY) #convert to binary
-    cropped_img = crop_image(bw_img)
-    FeatureVector= getFeatureVector(cropped_img)
-    print(FeatureVector)
+# if __name__=="__main__":
+    # #read image
+    # img = cv2.imread('t2214.png')
+    # img_grey = cv2.cvtColor(img,cv2.COLOR_RGB2GRAY)
+    # _, bw_img = cv2.threshold(img_grey,127,255,cv2.THRESH_BINARY) #convert to binary
+    # cropped_img = crop_image(bw_img)
+    # FeatureVector= getFeatureVector(cropped_img)
+    # print(FeatureVector)
 
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    # # cv2.waitKey(0)
+    # # cv2.destroyAllWindows()

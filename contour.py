@@ -10,9 +10,9 @@ image = cv2.imread(im_name)
 
 
 def segment(image):
-	# (ys , xs , _)= image.shape
-	# image = cv2.resize(image,(xs*5,ys*5), interpolation=cv2.INTER_AREA)
-	# cv2.imwrite("resized.png", image)  took those lines outside
+	ys , xs = image.shape
+	image = cv2.resize(image,(xs*5,ys*5), interpolation=cv2.INTER_AREA)
+	cv2.imwrite("resized.png", image)  #took those lines outside
 
 	# gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 	# gray = cv2.bitwise_not(gray)
@@ -24,19 +24,18 @@ def segment(image):
 	# cv2.imwrite("bin.png", bi)
 	# thresh =bi
 	# base line
-	print("len(thresh)", len(thresh))
 	h_line_hist = np.count_nonzero(thresh,axis=1)
 	v_line_hist = np.count_nonzero(thresh,axis=0)
 
 	line_index = np.argmax(h_line_hist)
 	max = np.amax(h_line_hist)
 	# thresh[line_index,:] = 255
-	cv2.imwrite("bl_line.png",thresh)
+	# cv2.imwrite("bl_line.png",thresh)
 
 	# edges 
 
 	c1_edges = cv2.Canny(thresh,0,500)
-	cv2.imwrite("edged.png",c1_edges)
+	# cv2.imwrite("edged.png",c1_edges)
 
 	# countour 
 
