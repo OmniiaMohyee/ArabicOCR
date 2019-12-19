@@ -20,24 +20,11 @@ def crop_image(img):
     # cv2.imshow("img",cropped_img)
     return cropped_img
 
-# 2. extract black and white pixels
-def get_black_and_white(img):
-    black_pixels = 0
-    white_pixels = 0
-    height, width = img.shape
-    for i in range (width):
-        for j in range(height):
-            if (img[i][j]==0):
-                black_pixels +=1
-            else:
-                white_pixels +=1
-    return black_pixels,white_pixels
-# 3. horizontal transitions
 def horizontal_transitions(img):
     horizontal =0
     height, width = img.shape
-    for i in range (width):
-        for j in range(1,height):
+    for i in range (height):
+        for j in range(1,width):
             if (img[i][j] != img[i][j-1]):
                 horizontal +=1
     return horizontal
@@ -45,33 +32,31 @@ def horizontal_transitions(img):
 def vertical_transitions(img):
     vertical = 0
     height, width = img.shape
-    for j in range (height):
-        for i in range (1,width):
+    for i in range (height):
+        for j in range (1,width):
             if (img[i][j] != img[i-1][j]):
                 vertical +=1
     return vertical
 
 def get_Regions(img):
-    width,height = img.shape
-    Region_1 = img[:width//2,:height//2]
-    Region_2 = img[:width//2,height//2+1:]
-    Region_3 = img[width//2+1:,:height//2]
-    Region_4 = img[width//2+1:,height//2+1:]
-    Regions= [Region_1,Region_2,Region_3,Region_4]
-    cv2.imshow("r1",Region_1)
-    cv2.imshow("r2",Region_2)
-    cv2.imshow("r3",Region_3)
-    cv2.imshow("r4",Region_4)
+    height,width = img.shape
+    Region_1 = img[:height//2,:width//2]
+    Region_2 = img[:height//2,width//2+1:]
+    Region_3 = img[height//2+1:,:width//2]
+    Region_4 = img[height//2+1:,width//2+1:]
+    Regions = [Region_1,Region_2,Region_3,Region_4]
     return Regions
 
 def getFeatureVector(cropped_img):
-    cv2.imwrite("cropped_img.png", cropped_img)
+    # cv2.imwrite("cropped_img.png", cropped_img)
     FeatureVector=[]
     height, width = cropped_img.shape
-    char_area = np.sum(cropped_img == 0) # char size/ area #where the foregroung is the black
-    FeatureVector.append(char_area)
     FeatureVector.append(height/width) #1. height/width
-    b,w = get_black_and_white(cropped_img)
+    # b,w = get_black_and_white(cropped_img)
+    char_size = np.sum(cropped_img == 0)  # add.1 char size/area #where the foregroung is the black
+    b = char_size
+    w = np.sum(cropped_img == 1)
+    FeatureVector.append(char_size) 
     FeatureVector.append(b/w) #2.black/white
     FeatureVector.append(horizontal_transitions(cropped_img)) # 3. horizontal transitions
     FeatureVector.append(vertical_transitions(cropped_img)) # 4. Vertical transitions
@@ -80,15 +65,33 @@ def getFeatureVector(cropped_img):
     black=[]
     white=[]
     for i in range (len(regions)):
-        b,w = get_black_and_white(regions[i])
+        # b,w = get_black_and_white(regions[i])
+        b = np.sum(cropped_img == 0)
+        w = np.sum(cropped_img == 1)
         black.append(b)
         white.append(w)
     for i in range (4):
         FeatureVector.append(black[i]/white[i])
+        FeatureVector.append(black[i]/char_size) # distribution features: for each quadrat -> Q/A
+    #distribution features: for halves
+    FeatureVector.append((black[1]+black[2])/char_size) # U/A
+    FeatureVector.append((black[3]+black[4])/char_size) # Lo/A
+    FeatureVector.append((black[1]+black[3])/char_size) # Le/A
+    FeatureVector.append((black[2]+black[4])/char_size) # R/A
     for i in range(3):
         for j in range(i+1,4):
             FeatureVector.append(black[i]/black[j])
+    num_contours,(cx,cy) = contours_and_cetroid(bw_img)
+    for 
     return FeatureVector
+
+def contours_and_cetroid(thresh):
+    contours,_ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    cnt = contours[0]
+    M = cv2.moments(cnt)
+    cx = int(M['m10']/M['m00']) #get char centroid
+    cy = int(M['m01']/M['m00'])
+    return len(contours), (cx, cy)
 
 if __name__=="__main__":
     #read image
