@@ -12,18 +12,23 @@ from sklearn.linear_model import Perceptron
 from sklearn.linear_model import SGDClassifier
 from sklearn.tree import DecisionTreeClassifier
 
-train_df = pd.read_csv('train.csv')
 
-Paths = train_df["Paths"]
-Labels = train_df["Labels"]
+# train_df = pd.read_csv('train.csv')
+# Paths = train_df["Paths"]
+# Labels = train_df["Labels"]
+# print(train_df.head())
+file1 = open('train.csv', encoding ='utf-8')
 
+x =file1.read()
+print(x)
 #tasks
 #1- read image from path
 #2- read labels and encode them
 #3- map each image to the feature vector
 #4- divide the dataset into training and test set
 #5- write the output of predict into a file
-#6- save the model 
+#6- save the model -->>>>
+
 
 # # Logistic Regression
 # logreg = LogisticRegression()
