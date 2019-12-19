@@ -10,13 +10,13 @@ image = cv2.imread(im_name)
 
 
 def segment(image):
-	ys, xs = image.shape
-	# image = cv2.resize(image,(xs*5,ys*5), interpolation=cv2.INTER_AREA)
+	ys, xs, _ = image.shape
+	image = cv2.resize(image,(xs*5,ys*5), interpolation=cv2.INTER_AREA)
 	# cv2.imwrite("resized.png", image)
 
-	# gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-	# gray = cv2.bitwise_not(gray)
-	# gray = image 
+	gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+	gray = cv2.bitwise_not(gray)
+
 	# for i in range(ys):
 	# 	for j in range(xs) :
 	# 		if gray[i][j] > 250:
@@ -24,10 +24,9 @@ def segment(image):
 	# 		else:
 	# 			gray[i][j] = 0
 	# cv2.imwrite("gray.png",gray)
-	# thresh = cv2.threshold(gray, 250, 255,
-	# 	cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
-	thresh = image	#already resized the binarized
-	cv2.imwrite("thresh.png",thresh)
+	thresh = cv2.threshold(gray, 250, 255,
+		cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+	# cv2.imwrite("thresh.png",thresh)
 	# thresh = cv2.blur(thresh,(2,2))
 	# cv2.imwrite("thresh.png", thresh)
 	# cv2.imwrite("bin.png", bi)
@@ -39,12 +38,12 @@ def segment(image):
 	line_index = np.argmax(h_line_hist)
 	max = np.amax(h_line_hist)
 	# thresh[line_index,:] = 255
-	cv2.imwrite("bl_line.png",thresh)
+	# cv2.imwrite("bl_line.png",thresh)
 
 	# edges 
 
 	c1_edges = cv2.Canny(thresh,0,500)
-	cv2.imwrite("edged.png",c1_edges)
+	# cv2.imwrite("edged.png",c1_edges)
 
 	# countour 
 
@@ -114,7 +113,7 @@ def segment(image):
 		# if(j == 1 ):
 		# cv2.drawContours(image, [cnt], 0, (0,255,0), 1)
 
-		cv2.imwrite("contoured.png",image)
+		# cv2.imwrite("contoured.png",image)
 
 		list=list[::-1]
 		# cv2.drawContours(image,[cnt], 0, (0,255,0), 1)
@@ -187,7 +186,7 @@ def segment(image):
 		# print(min_list)
 		# max_min.sort(key=lambda x:x[0])
 		# print(min_max)
-		cv2.imwrite("contoured.png",image)
+		# cv2.imwrite("contoured.png",image)
 
 		selected_mins = []
 		splitting_points =[]
@@ -294,12 +293,12 @@ def segment(image):
 				chars.append([x,char])
 			# print(prev_point[0],segment[0])
 			# print(char)
-				cv2.imwrite('contour_'+str(j+1)+'char_'+str(i+1)+".png",char)
+				# cv2.imwrite('contour_'+str(j+1)+'char_'+str(i+1)+".png",char)
 			prev_point = segment
 	# xs = [row[0] for row in chars]
 	# print(xs)
 	chars.sort(key= lambda x :x[0])
 	chars = chars[::-1]
-	cv2.imwrite("contoured.png",image)
+	# cv2.imwrite("contoured.png",image)
 	return [row[1] for row in chars]
 # cs = segment(image)
