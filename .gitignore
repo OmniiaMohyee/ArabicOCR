@@ -3,3 +3,4 @@ __pycache__/*
 .vscode/*
 chars/*
 *.png
+features/__pycache__/*

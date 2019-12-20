@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import cv2 
 
+from features.feat_test import crop_image,getFeatureVector
+
 # machine learning
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC, LinearSVC
@@ -21,15 +23,27 @@ Paths = list(Paths)
 Labels = list(Labels)
 # print(Labels)
 # print(Paths)
-
+Features =[]
+i=0
 for path in Paths:
     # print(path)
-    img = cv2.imread('../'+path)
+    img = cv2.imread(path)
     # print(img.shape)
-# file1 = open('dataset.csv', encoding ='utf-8')
+    img_grey = cv2.cvtColor(img,cv2.COLOR_RGB2GRAY)
+    _, bw_img = cv2.threshold(img_grey,127,255,cv2.THRESH_BINARY) #convert to binary
+    cropped_img = crop_image(bw_img)
+    i+=1
+    print(i)
+    cv2.imwrite('train/'+str(i)+'.png',cropped_img)
+    # img_gray = cv2.cvtColor(img,cv2.COLOR_RGB2GRAY) #black char
+    # image_gray = cv2.bitwise_not(img_gray) #white char
+    # image_thresholded = cv2.threshold(img_gray, 127, 255, cv2.THRESH_BINARY| cv2.THRESH_OTSU)[1]
+    # cropped_img = crop_image(image_thresholded)
+    Features.append(getFeatureVector(cropped_img)) 
+    # print(getFeatureVector(cropped_img))
+print(len(Features))
+print(len(Labels))
 
-# x =file1.read()
-# print(x)
 #tasks
 #1- read image from path
 #2- read labels and encode them
@@ -38,6 +52,11 @@ for path in Paths:
 #5- write the output of predict into a file
 #6- save the model -->>>>
 
+logreg = LogisticRegression()
+logreg.fit(Features, Labels)
+# Y_pred = logreg.predict(X_test)
+acc_log = round(logreg.score(Features, Labels) * 100, 2)
+print(acc_log)
 
 # # Logistic Regression
 # logreg = LogisticRegression()
