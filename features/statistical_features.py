@@ -54,9 +54,7 @@ def vertical_transitions(img):
 def get_Regions(img):
     width,height = img.shape
     Region_1 = img[:width//2,:height//2]
-    Region_ray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-gray = cv2.bitwise_not(gray)
-thresh = cv2.threshold(gray, 0, 255,2 = img[:width//2,height//2+1:]
+    Region_2 = img[:width//2,height//2+1:]
     Region_3 = img[width//2+1:,:height//2]
     Region_4 = img[width//2+1:,height//2+1:]
     Regions= [Region_1,Region_2,Region_3,Region_4]
@@ -66,6 +64,10 @@ thresh = cv2.threshold(gray, 0, 255,2 = img[:width//2,height//2+1:]
     # cv2.imshow("r4",Region_4)
     return Regions
 
+def getConnectivety(img):
+    output = cv2.connectedComponentsWithStats(img, 8)
+    print(output)
+    # return output[0]
 def getFeatureVector(cropped_img):
     FeatureVector=[]
     width,height = cropped_img.shape
@@ -97,6 +99,7 @@ if __name__=="__main__":
     cropped_img = crop_image(bw_img)
     FeatureVector= getFeatureVector(cropped_img)
     print(FeatureVector)
-
+    getConnectivety(cropped_img)
+    
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
