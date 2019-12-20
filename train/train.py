@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-
+import cv2 
 
 # machine learning
 from sklearn.linear_model import LogisticRegression
@@ -13,19 +13,28 @@ from sklearn.linear_model import SGDClassifier
 from sklearn.tree import DecisionTreeClassifier
 
 
-# train_df = pd.read_csv('train.csv')
-# Paths = train_df["Paths"]
-# Labels = train_df["Labels"]
-# print(train_df.head())
-file1 = open('train.csv', encoding ='utf-8')
+train_df = pd.read_csv('dataset.csv')
+Paths = train_df["path"]
+Labels = train_df["char"]
 
-x =file1.read()
-print(x)
+Paths = list(Paths)
+Labels = list(Labels)
+# print(Labels)
+# print(Paths)
+
+for path in Paths:
+    # print(path)
+    img = cv2.imread('../'+path)
+    # print(img.shape)
+# file1 = open('dataset.csv', encoding ='utf-8')
+
+# x =file1.read()
+# print(x)
 #tasks
 #1- read image from path
 #2- read labels and encode them
 #3- map each image to the feature vector
-#4- divide the dataset into training and test set
+#4- divide the dataset into training and test set -----> lesssaaaaaa
 #5- write the output of predict into a file
 #6- save the model -->>>>
 
