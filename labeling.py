@@ -58,9 +58,9 @@ def build_association_file():
                 #add to csv file
                 for c in text[words_iter]:
                     cv2.imwrite("chars/char_"+str(text_chars_iter)+".png", chars[scanned_chars_iter])
+                    writer.writerow({'char': c, 'path' : "chars/char_"+str(text_chars_iter)+".png"})
                     text_chars_iter += 1
                     scanned_chars_iter += 1
-                    writer.writerow({'char': c, 'path' : "chars/char_"+str(text_chars_iter)+".png"})
             words_iter += 1
             if words_iter >= len(text): #just to prevent craching till word segmentation is right
                 break
