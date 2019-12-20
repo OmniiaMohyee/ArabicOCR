@@ -45,7 +45,7 @@ image = cv2.imread(im_name)
 # 		hist_result.append(res)
 # 	print(hist_result)
 def char_test(deleted_indices,segmentation_points,image,character,thr):
-	# print(type(image))
+	print(type(character))
 	character = cv2.cvtColor(character, cv2.COLOR_RGB2GRAY)	
 	num_points = len(segmentation_points)
 	seen_cnt,_h= cv2.findContours(character, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
@@ -76,17 +76,14 @@ def char_test(deleted_indices,segmentation_points,image,character,thr):
 		matches.append([match,i])
 	# print(matches)
 	# matches.sort(key = lambda x:x[0])
-	if len(matches) == 0:
-		return
 	normalized = [row[0] for row in matches]
-	# print("normalized", normalized)
 	m = np.max(normalized)
 	normalized = [float(i)/m for i in normalized]
 	for i in range(len(matches)):
 		matches[i][0] = normalized[i]
 	matches.sort(key =lambda x:x[0])
 	normalized_matches = matches
-	# print(normalized_matches)
+	print(normalized_matches)
 	k =0 
 	for k in range(len(normalized_matches)):
 		index = normalized_matches[k][1]
@@ -105,11 +102,10 @@ def char_test(deleted_indices,segmentation_points,image,character,thr):
 		deleted_indices.append(segmentation_points[index+3])
 
 	for r in to_remove:
-		if r in segmentation_points:
-			segmentation_points.remove(r)
+		segmentation_points.remove(r)
 	# print(normalized_matches)
 
-def segment(image, words_iter):
+def segment(image):
 	(ys , xs , _)= image.shape
 	image = cv2.resize(image,(xs*5,ys*5), interpolation=cv2.INTER_AREA)
 	cv2.imwrite("resized.png", image)
@@ -256,7 +252,7 @@ def segment(image, words_iter):
 		# cv2.circle(image,(int(x),int(y)), 1, (255, 0, 0), -1)
 		min_list.append([x,y])
 		
-	threshold = 24
+	threshold = 5
 	for m in maximas:
 		x,y=[list_x[m],list_y[m]]
 		blue = image[y][x][0]
@@ -390,13 +386,13 @@ def segment(image, words_iter):
 	
 	deleted_indices = []
 	# # sheen
-	# print(segmentation_points)
+	print(segmentation_points)
 	seen2=cv2.imread('seen2.png')
-	# char_test(deleted_indices,segmentation_points,thresh,seen2,0.1)
+	char_test(deleted_indices,segmentation_points,thresh,seen2,0.1)
 
 	if(len(deleted_indices) == 0):
 		seen =cv2.imread('seen.png')
-		# char_test(deleted_indices,segmentation_points,thresh,seen,0.1)
+		char_test(deleted_indices,segmentation_points,thresh,seen,0.2)
 
 
 	# seen3=cv2.imread('seen3.png')
@@ -434,6 +430,6 @@ def segment(image, words_iter):
 	for c in chars:
 		cv2.imwrite("char_"+str(i)+".png",c)
 		i+=1
-	cv2.imwrite("contoured."+str(words_iter)+".png",image)  
+	cv2.imwrite("contoured.png",image)
 	return chars
 # cs = segment(image)

@@ -106,12 +106,12 @@ if __name__ == "__main__":
     img = cv2.imread('../tests/gem.png')
     img_gray = cv2.cvtColor(img,cv2.COLOR_RGB2GRAY) #black char
     image_gray = cv2.bitwise_not(img_gray) #white char
-    image_thresholded = cv2.threshold(img_gray, 127, 255, cv2.THRESH_BINARY| cv2.THRESH_OTSU)[1]
+    image_thresholded = cv2.threshold(image_gray, 127, 255, cv2.THRESH_BINARY| cv2.THRESH_OTSU)[1]
     cropped_img = crop_image(image_thresholded)
     FeatureVector= getFeatureVector(cropped_img)
-    thresholded = cv2.threshold(image_gray, 127, 255, cv2.THRESH_BINARY| cv2.THRESH_OTSU)[1]
-    _, markers = cv2.connectedComponents(thresholded)
-    print(np.amax(markers))
+    # thresholded = cv2.threshold(image_gray, 127, 255, cv2.THRESH_BINARY| cv2.THRESH_OTSU)[1]
+    # _, markers = cv2.connectedComponents(thresholded)
+    # print(np.amax(markers))
 
     # print("num of features:", len(FeatureVector))
     # print(FeatureVector)

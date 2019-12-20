@@ -43,7 +43,7 @@ def build_association_file():
             # cv2.imwrite("t/word"+str(words_iter)+".png", word)
             # connected_components, _ = word_segment.word_segment(word,threshold)
             # print("len of connected_components = ",len(connected_components))
-            chars = contour.segment(word)
+            chars = contour.segment(word, words_iter)
             scanned_chars_count += len(chars)
             #print("number of chars = ", len(chars))
             if len(text[words_iter]) != scanned_chars_count:
