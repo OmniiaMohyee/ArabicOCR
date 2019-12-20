@@ -32,7 +32,6 @@ def line_segment(image,not_bin_image):
         result_lines.append(im[bounds[i]+1:bounds[i+1],:])
         
         result_lines_not_bin.append(im_2[bounds[i]+1:bounds[i+1],:])
-        cv2.imwrite("line"+str(line)+".png",im_2[bounds[i]+1:bounds[i+1],:])
         line+=1
     return result_lines,result_lines_not_bin,line-1
 
@@ -65,31 +64,29 @@ def word_segment(image,not_bin_image,threshold,scale):
             k+=j
         else:
             k+=1
-    word = 1
-    result_words = []
+    word = 0
+    #we need both binary and non binary for processing.
+    result_words_not_bin = []
+    result_words_bin = []
     for i in range(len(bounds)-1):
-        result = im[:,bounds[i]+1:bounds[i+1]]
-        result = im_2[:,bounds[i]+1:bounds[i+1]]
-        result_words.append(result)
+        result_bin = im[:,bounds[i]+1:bounds[i+1]]
+        result_not_bin = im_2[:,bounds[i]+1:bounds[i+1]]
+        result_words_bin.append(result_bin)
+        result_words_not_bin.append(result_not_bin)
         word += 1
 
-    return result_words,word-1,im
+    return result_words_not_bin,result_words_bin,word
+
 
 
 def word_seg(clean_img,clean_img_not_bin):
-    
     lines, not_bin_lines, size_lines = line_segment(clean_img,clean_img_not_bin)
+    print(size_lines)
     all_words = []
+    all_words_bin = []
     count  = 0 
     for j in range(size_lines):
-        words,length_words,im = word_segment(lines[j],not_bin_lines[j],5,10)# 1--> threshold : hyperparamter
-        print(length_words)
-        count+= length_words
-        #cv2.imwrite("line"+str(j+1)+".png",im)
-    #     for i in range(size_words):
-            #cv2.imwrite("word"+str(count)+".png",words[i])
-            #count += 1
-    print(count)
-
-img,not_bin_img = preproc("tests/capr3.png")
-word_seg(img,not_bin_img)
+        words,words_bin,size_words = word_segment(lines[j],not_bin_lines[j],10,5)# 1--> threshold : hyperparamter
+        all_words += words
+        all_words_bin += words_bin
+    return all_words,all_words_bin
