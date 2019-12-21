@@ -83,5 +83,6 @@ def word_seg(clean_img,clean_img_not_bin):
     count  = 0 
     for j in range(size_lines):
         words,size_words = word_segment(lines[j],not_bin_lines[j],10,5)# 1--> threshold : hyperparamter
+        words = words[::-1]
         all_words += words
     return all_words

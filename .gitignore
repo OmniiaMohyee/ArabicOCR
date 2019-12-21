@@ -2,5 +2,5 @@ __pycache__/*
 .dist/*
 .vscode/*
 chars/*
-*.png
 features/__pycache__/*
+**/__pycache__
