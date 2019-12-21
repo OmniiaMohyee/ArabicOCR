@@ -232,7 +232,7 @@ def segment(image, words_iter):
 		min_list = []
 		max_list = []
 
-		min_threshold = 10
+		min_threshold = 30
 		for m in minimas:
 			x,y=[list_x[m],list_y[m]]
 			if(y < base_line-min_threshold):
@@ -250,7 +250,7 @@ def segment(image, words_iter):
 			green =image[y][x][1]
 			red = image[y][x][2]
 			color = gray[y][x]
-			print(color)
+			# print(color)
 			if(y < (base_line-threshold)):
 			# if(y < (base_line-threshold)):
 				max_list.append([x,y])
@@ -331,14 +331,18 @@ def segment(image, words_iter):
 
 			if(next_max != -1):
 				diff_max = next_max[0] - prev_max[0]	
-			area = (base_line - prev_max[1])*(diff_max)
+			area = (x - prev_max[0])*(y- prev_max[1])
+			print(x - prev_max[0],y- prev_max[1])
+			print(area)
+			if(area < 800):
+				continue
 			step = 5
 			if(abs(s[0]-prev_max[0]) < step):
 				continue
 			prev_hight =base_line-prev_max[1] 
-			print(diff_min)
-			print(prev_hight , max_hight)
-			print(s, rightmost )
+			# print(diff_min)
+			# print(prev_hight , max_hight)
+			# print(s, rightmost )
 			if (prev_point[0] == leftmost[0] or x == rightmost[0]) and prev_hight >= max_hight and diff_min >= avg_char_width_mid/3 :
 				# cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(255,0,0),2)
 				segmentation_points.append([x,y])
