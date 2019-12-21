@@ -231,7 +231,7 @@ def segment(image, words_iter):
 		min_list = []
 		max_list = []
 
-		min_threshold = 25
+		min_threshold = 10
 		for m in minimas:
 			x,y=[list_x[m],list_y[m]]
 			if(y < base_line-min_threshold):
@@ -240,8 +240,8 @@ def segment(image, words_iter):
 			# cv2.circle(image,(int(x),int(y)), 1, (255, 0, 0), -1)
 			min_list.append([x,y])
 			
-		threshold = 10
-		# image[base_line-threshold]=(255,255,0)
+		threshold = 50
+		image[base_line-threshold]=(255,255,0)
 		for m in maximas:
 			x,y=[list_x[m],list_y[m]]
 			blue = image[y][x][0]
@@ -275,7 +275,7 @@ def segment(image, words_iter):
 		x,y = leftmost
 		splitting_points.append([x,y])
 		i = 1
-		avg_char_width = 105
+		avg_char_width = 100
 		avg_char_area = 300
 
 		for m in range(len(min_list)):
