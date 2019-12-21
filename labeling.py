@@ -36,7 +36,7 @@ def build_association_file():
         # read scanned file 
         clean_img,clean_image_not_bin = preprocess.preproc(data_point) # pre-process image
         words = word_segment.word_seg(clean_img,clean_image_not_bin) # segment image into characters
-        chars = contour.segment(words[43], words_iter)
+        chars = contour.segment(words[60], words_iter)
 
         # print("num of segmented words = ", len(words))
     #     for word in words:
