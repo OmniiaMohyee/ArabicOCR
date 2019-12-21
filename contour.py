@@ -250,7 +250,7 @@ def segment(image, words_iter):
 			green =image[y][x][1]
 			red = image[y][x][2]
 			color = gray[y][x]
-			print(color)
+			# print(color)
 			if(y < (base_line-threshold)):
 			# if(y < (base_line-threshold)):
 				max_list.append([x,y])
@@ -336,9 +336,9 @@ def segment(image, words_iter):
 			if(abs(s[0]-prev_max[0]) < step):
 				continue
 			prev_hight =base_line-prev_max[1] 
-			print(diff_min)
-			print(prev_hight , max_hight)
-			print(s, rightmost )
+			# print(diff_min)
+			# print(prev_hight , max_hight)
+			# print(s, rightmost )
 			if (prev_point[0] == leftmost[0] or x == rightmost[0]) and prev_hight >= max_hight and diff_min >= avg_char_width_mid/3 :
 				# cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(255,0,0),2)
 				segmentation_points.append([x,y])
