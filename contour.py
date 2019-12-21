@@ -79,7 +79,7 @@ def char_test(deleted_indices,segmentation_points,image,character,thr):
 			segmentation_points.remove(r)
 
 def hough_test(deleted_indices,segmentation_points,image,character):
-    
+    pass
     
 
 def segment(image, words_iter):
@@ -310,9 +310,9 @@ def segment(image, words_iter):
 
 
 		seen=cv2.imread('cnt/seen.png')
-		char_test(deleted_indices,min_list,thresh,seen,0.1)
+		# char_test(deleted_indices,min_list,thresh,seen,0.1)
 		seen2=cv2.imread('cnt/seen2.png')
-		char_test(deleted_indices,min_list,thresh,seen2,0.1)
+		# char_test(deleted_indices,min_list,thresh,seen2,0.1)
 
 		for s in min_list :
 			x = s[0]
@@ -339,8 +339,8 @@ def segment(image, words_iter):
 			if(abs(s[0]-prev_max[0]) < step):
 				continue
 			prev_hight =base_line-prev_max[1] 
-			print(diff_min)
-			print(prev_hight , max_hight)
+			# print(diff_min)
+			# print(prev_hight , max_hight)
 			# print(s, rightmost )
 			if((diff_min >= avg_char_width)):
 				# cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(0,0,255),2)

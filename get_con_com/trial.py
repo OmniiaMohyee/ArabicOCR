@@ -47,6 +47,7 @@ def draw_vert_hist(bin_img, not_bin_img,threshold):
     im_2 = not_bin_img.copy()
     vert_hist = np.count_nonzero(im > 127, axis=0)
     k = 0
+    bounds = []
     while(k<len(vert_hist)): 
         count = 1
         if(vert_hist[k] == 0):
@@ -62,12 +63,19 @@ def draw_vert_hist(bin_img, not_bin_img,threshold):
             if(count > threshold):
                 im[:,k+int(count/2)] = 255
                 im_2[:,k+int(count/2)] = 0
+                bounds.append(k+int(count/2))
             k+=j
         else:
             k+=1
     return im, im_2
-
-
+    word = 1
+    result_words = []
+    for i in range(len(bounds)-1):
+        result = im[:,bounds[i]+1:bounds[i+1]]
+        result = im_2[:,bounds[i]+1:bounds[i+1]]
+        result_words.append(result)
+        word += 1
+    return result_words_bin,result_words_not_bin
 
 
 
