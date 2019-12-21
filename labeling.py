@@ -3,6 +3,7 @@ import preprocess
 import word_segment
 import contour
 import statistical_features
+import feat_test
 #---------------------
 import csv
 import pandas as pd 
@@ -70,7 +71,7 @@ def build_association_file():
     # print("wrong = ", wrong)
     csv_file.close()
     # encode character labels into numbers
-    df = pd.read_csv('dataset.csv')
-    label_encoder = preprocessing.LabelEncoder() 
-    df['code']= label_encoder.fit_transform(df['char']) # Encode labels in column 'char
-    df.to_csv('dataset.csv')
+    # df = pd.read_csv('dataset.csv')
+    # label_encoder = preprocessing.LabelEncoder() 
+    # df['code']= label_encoder.fit_transform(df['char']) # Encode labels in column 'char
+    # df.to_csv('dataset.csv')

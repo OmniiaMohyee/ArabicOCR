@@ -4,7 +4,7 @@ import cv2
 
 # 1.exact width and height
 def crop_image(img):
-    img_width, img_height = img.shape
+    img_height, img_width = img.shape
     first_row = img_height
     first_col = img_width
     last_row = 0
@@ -66,11 +66,12 @@ def get_Regions(img):
 
 def getConnectivety(img):
     output = cv2.connectedComponentsWithStats(img, 8)
-    print(output)
+    # print(output)
     # return output[0]
 def getFeatureVector(cropped_img):
     FeatureVector=[]
     width,height = cropped_img.shape
+    print(cropped_img.shape)
     FeatureVector.append(height/width) #1. height/width
     b,w = get_black_and_white(cropped_img)
     FeatureVector.append(b/w) #2.black/white
@@ -93,10 +94,11 @@ def getFeatureVector(cropped_img):
 
 if __name__=="__main__":
     #read image
-    img = cv2.imread('t2214.png')
+    img = cv2.imread('../tests/gem.png')
     img_grey = cv2.cvtColor(img,cv2.COLOR_RGB2GRAY)
     _, bw_img = cv2.threshold(img_grey,127,255,cv2.THRESH_BINARY) #convert to binary
     cropped_img = crop_image(bw_img)
+    cv2.imwrite("c1.png", cropped_img)
     FeatureVector= getFeatureVector(cropped_img)
     print(FeatureVector)
     getConnectivety(cropped_img)
