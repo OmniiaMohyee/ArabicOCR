@@ -16,7 +16,7 @@ def build_association_file():
     tot_wrong = 0
     data_point_it = 0
     text_chars_iter = 1  # for writing in csv file
-    scanned_chars_iter = 0 # just for watching chars
+    scanned_chars_iter = 0 # same
     #prepare output file
     csv_file = open('dataset.csv', encoding='utf-8', mode='w')
     writer = csv.DictWriter(csv_file, fieldnames=['char','path'])
@@ -48,7 +48,7 @@ def build_association_file():
                 right += 1
                 #add to csv file
                 for c in text[words_iter]:
-                    # cv2.imwrite("chars/char_"+str(text_chars_iter)+".png", chars[scanned_chars_iter])
+                    cv2.imwrite("chars/char_"+str(text_chars_iter)+".png", chars[scanned_chars_iter])
                     writer.writerow({'char': c, 'path' : "chars/char_"+str(text_chars_iter)+".png"})
                     text_chars_iter += 1
                     scanned_chars_iter += 1                    
