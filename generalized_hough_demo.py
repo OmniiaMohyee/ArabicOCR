@@ -12,10 +12,11 @@ from find_maxima import *
 import numpy as np
 
 def hough_match(im,img):
-    refim = imread(img)
+    refim = img
+
     table = buildRefTable(refim)
     acc = matchTable(im, table)
-    val, ridx, cidx = findMaxima(acc)
+    val, ridx, cidx , max_v = findMaxima(acc)
     # code for drawing bounding-box in accumulator array...
 
     acc[ridx - 5:ridx + 5, cidx - 5] = val
@@ -24,9 +25,9 @@ def hough_match(im,img):
     acc[ridx - 5, cidx - 5:cidx + 5] = val
     acc[ridx + 5, cidx - 5:cidx + 5] = val
 
-    plt.figure(1)
-    imshow(acc)
-    plt.show()
+    # plt.figure(1)
+    # imshow(acc)
+    # plt.show()
 
     # code for drawing bounding-box in original image at the found location...
 
@@ -48,4 +49,4 @@ def hough_match(im,img):
     # im[rend, cstart:cend] = 255
 
     # show the image
-    return rstart,rend,cstart,cend
+    return rstart,rend,cstart,cend ,max_v
