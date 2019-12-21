@@ -51,8 +51,9 @@ def char_test(deleted_indices,segmentation_points,image,character,thr):
 	num_points = len(segmentation_points)
 	seen_cnt,_h= cv2.findContours(character, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 	# print(len(seen_cnt))
-	seen_cnt=seen_cnt[0]
-	hull1 = cv2.convexHull(seen_cnt)
+	areas = [cv2.contourArea(x) for x in seen_cnt]
+	m = np.argmax(areas)
+	seen_cnt=seen_cnt[m]
 	# print(num_points)
 	to_remove =[]
 	# print(segmentation_points)
@@ -83,8 +84,8 @@ def char_test(deleted_indices,segmentation_points,image,character,thr):
 
 	normalized = [row[0] for row in matches]
 	# print("normalized", normalized)
-	m = np.sum(normalized)
-	normalized = [float(i)/10 for i in normalized]
+	# m = np.sum(normalized)
+	# normalized = [float(i)/10 for i in normalized]
 	for i in range(len(matches)):
 		matches[i][0] = normalized[i]
 	matches.sort(key =lambda x:x[0])
@@ -111,8 +112,8 @@ def char_test(deleted_indices,segmentation_points,image,character,thr):
 	for r in to_remove:
 		if r in segmentation_points:
 			segmentation_points.remove(r)
-	# print(normalized_matches)
 
+# def hough_test()
 
 def segment(image, words_iter):
 	(ys , xs , _)= image.shape
@@ -148,6 +149,7 @@ def segment(image, words_iter):
 	# countour 
 
 	contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+
 	areas = [cv2.contourArea(x) for x in contours]
 	m = np.max(areas)
 	normalized_areas= [float(i)/m for i in areas]
@@ -158,12 +160,12 @@ def segment(image, words_iter):
 	for it in range(n):
 		t=it
 		cnt = contours[t]
-		# cv2.drawContours(image, [cnt], 0, (0,255,0), 1)
+		cv2.drawContours(image, [cnt], 0, (0,255,0), 1)
 		# cv2.imwrite("cnt/contoured.png",image)
 
 		if(hierarchy[0,t,3] != -1 ):
 			continue
-		elif normalized_areas[it] < 0.25 :
+		elif normalized_areas[t] < 0.1 :
 			cv2.drawContours(thresh, [cnt], 0, (0,0,0,0), -1)
 			continue
 		segmentation_points = []
@@ -276,7 +278,7 @@ def segment(image, words_iter):
 			# cv2.circle(image,(int(x),int(y)), 1, (255, 0, 0), -1)
 			min_list.append([x,y])
 			
-		threshold = 50
+		threshold = 70
 		# image[base_line-threshold]=(255,255,0)
 		for m in maximas:
 			x,y=[list_x[m],list_y[m]]
@@ -306,12 +308,12 @@ def segment(image, words_iter):
 		if( len(min_list) == 0 or len(max_list ) == 0):
 			continue
 		temp_y = [row[1] for row in max_list]
-		max_hight = np.min(temp_y)
+		max_hight = 200
 		splitting_points =[]
 		x,y = leftmost
 		splitting_points.append([x,y])
 		i = 1
-		avg_char_width = 99
+		avg_char_width = 105
 		avg_char_area = 300
 
 		# for m in range(len(min_list)):
@@ -327,7 +329,8 @@ def segment(image, words_iter):
 		prev_prev= leftmost
 		x,y =leftmost
 		segmentation_points.append([x,y])
-
+		if([x,y] not in min_list):
+			min_list = [[x,y]] + min_list
 		# print(segmentation_points)
 		x,y =rightmost
 		splitting_points.append([x,y])
@@ -337,6 +340,13 @@ def segment(image, words_iter):
 		min_max.append([x,y])
 		if([x,y] not in min_list):
 			min_list.append([x,y])
+
+
+		seen=cv2.imread('cnt/seen.png')
+		char_test(deleted_indices,min_list,thresh,seen,0.1)
+		seen2=cv2.imread('cnt/seen2.png')
+		char_test(deleted_indices,min_list,thresh,seen2,0.1)
+
 		for s in min_list :
 			x = s[0]
 			y = s[1]
@@ -361,32 +371,32 @@ def segment(image, words_iter):
 			step = 5
 			if(abs(s[0]-prev_max[0]) < step):
 				continue
+			prev_hight =base_line-prev_max[1] 
 			print(diff_min)
-			# print(prev_max[1] , max_hight)
-			print(s, rightmost )
+			print(prev_hight , max_hight)
+			# print(s, rightmost )
 			if((diff_min >= avg_char_width)):
 				# cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(0,0,255),2)
 				segmentation_points.append([x,y])
 				prev_prev = prev_point
 				prev_point = s
-			elif (prev_point[0] == leftmost[0] or x == rightmost[0]) and prev_max[1] == max_hight and diff_min >= avg_char_width/2 :
+			elif (prev_point[0] == leftmost[0] or x == rightmost[0]) and prev_hight >= max_hight and diff_min >= avg_char_width/3 :
 				# cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(255,0,0),2)
 				segmentation_points.append([x,y])
 				prev_prev = prev_point
 				prev_point = s
+			elif prev_point[0]-prev_prev[0] >= avg_char_width and x-prev_point[0] >= avg_char_width/2 :
+				pass
 			else:
 				# cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(0,255,255),2)
 				if(prev_point in segmentation_points):
 					segmentation_points.remove(prev_point)
 				prev_point = s
+			
 		prev_point = leftmost
 		num_points = len(segmentation_points)
 
 
-		seen=cv2.imread('cnt/seen.png')
-		char_test(deleted_indices,splitting_points,thresh,seen,0.1)
-		seen2=cv2.imread('cnt/seen2.png')
-		char_test(deleted_indices,splitting_points,thresh,seen2,0.1)
 
 		try:
 			x,y =leftmost
