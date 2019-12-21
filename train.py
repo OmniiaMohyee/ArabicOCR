@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import cv2 
-
+import pickle
 from features.feat_test import crop_image,getFeatureVector
 
 # machine learning
@@ -21,6 +21,7 @@ Labels = train_df["char"]
 
 Paths = list(Paths)
 Labels = list(Labels)
+print(Labels)
 # print(Labels)
 # print(Paths)
 Features =[]
@@ -49,14 +50,17 @@ print(len(Labels))
 #2- read labels and encode them
 #3- map each image to the feature vector
 #4- divide the dataset into training and test set -----> lesssaaaaaa
-#5- write the output of predict into a file
-#6- save the model -->>>>
+#5- write the output of predict into a file ----->>>
+#6- save the model 
 
 logreg = LogisticRegression()
 logreg.fit(Features, Labels)
 # Y_pred = logreg.predict(X_test)
 acc_log = round(logreg.score(Features, Labels) * 100, 2)
 print(acc_log)
+# save the model to disk
+filename = 'Logistic_regression.sav'
+pickle.dump(model, open(filename, 'wb'))
 
 # # Logistic Regression
 # logreg = LogisticRegression()
