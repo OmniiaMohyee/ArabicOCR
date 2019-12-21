@@ -38,7 +38,7 @@ def char_test(deleted_indices,segmentation_points,image,character,thr):
 		hull2 = cv2.convexHull(cont)
 		match = cv2.matchShapes(seen_cnt,cont,1,0.0)
 		# print(hull1,hull2)
-		cv2.imwrite(str(i)+".png",section)
+		# cv2.imwrite(str(i)+".png",section)
 		# print(match)
 		# print(i)
 		matches.append([match,i])
@@ -90,7 +90,7 @@ def hough_test(im,image,character):
 def segment(image, words_iter):
 	(ys , xs , _)= image.shape
 	image = cv2.resize(image,(xs*5,ys*5), interpolation=cv2.INTER_AREA)
-	cv2.imwrite("cnt/resized.png", image)
+	# cv2.imwrite("cnt/resized.png", image)
 
 	gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 	gray = cv2.bitwise_not(gray)
@@ -101,7 +101,7 @@ def segment(image, words_iter):
 	# 			gray[i][j] = 255
 	# 		else:
 	# 			gray[i][j] =- 0
-	cv2.imwrite("cnt/gray.png",gray)
+	# cv2.imwrite("cnt/gray.png",gray)
 	thresh = cv2.threshold(gray, 135, 255,cv2.THRESH_BINARY)[1]
 	thresh2 = cv2.threshold(gray, 100, 255,cv2.THRESH_BINARY)[1]
 
@@ -113,12 +113,12 @@ def segment(image, words_iter):
 	# thresh =bi
 	# base line
 	# thresh[line_index,:] = 255
-	cv2.imwrite("cnt/bl_line.png",thresh)
+	# cv2.imwrite("cnt/bl_line.png",thresh)
 
 	# edges 
 
 	edges = cv2.Canny(thresh,0,500)
-	cv2.imwrite("cnt/edges.png",edges)
+	# cv2.imwrite("cnt/edges.png",edges)
 
 	# countour 
 
@@ -232,7 +232,7 @@ def segment(image, words_iter):
 		min_list = []
 		max_list = []
 
-		min_threshold = 10
+		min_threshold = 30
 		for m in minimas:
 			x,y=[list_x[m],list_y[m]]
 			if(y < base_line-min_threshold):
@@ -331,7 +331,11 @@ def segment(image, words_iter):
 
 			if(next_max != -1):
 				diff_max = next_max[0] - prev_max[0]	
-			area = (base_line - prev_max[1])*(diff_max)
+			area = (x - prev_max[0])*(y- prev_max[1])
+			# print(x - prev_max[0],y- prev_max[1])
+			# print(area)
+			if(area < 800):
+				continue
 			step = 5
 			if(abs(s[0]-prev_max[0]) < step):
 				continue
@@ -399,10 +403,10 @@ def segment(image, words_iter):
 	chars = [row[1] for row in chars]
 	i =1
 	for c in chars:
-		cv2.imwrite("cnt/char_"+str(words_iter)+'__'+str(i)+".png",c)
+		# cv2.imwrite("cnt/char_"+str(words_iter)+'__'+str(i)+".png",c)
 		i+=1
-	cv2.imwrite("cnt/contoured."+str(words_iter)+".png",image)  
-	cv2.imwrite("cnt/thresh.png",thresh)
+	# cv2.imwrite("cnt/contoured."+str(words_iter)+".png",image)  
+	# cv2.imwrite("cnt/thresh.png",thresh)
 
 	return chars
 # cs = segment(image)
