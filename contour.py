@@ -3,47 +3,12 @@ import numpy as np
 from scipy.signal import argrelextrema
 import copy
 from PIL import Image
+import generalized_hough_demo 
 ## SKEW DETECTION.
 #1- Binarizing the image.
 im_name = "c1.png"
 image = cv2.imread(im_name)
 
-# def hist_test(segmentation_points,image,character):
-# 	cv2.cvtColor(character, cv2.COLOR_BGR2HSV)
-# 	( cropy , cropx , _)= character.shape
-# 	print(character.shape)
-# 	h_bins = 50
-# 	s_bins = 60
-# 	histSize = [h_bins, s_bins]
-# 	# hue varies from 0 to 179, saturation from 0 to 255
-# 	h_ranges = [0, 180]
-# 	s_ranges = [0, 256]
-# 	ranges = h_ranges + s_ranges # concat lists
-# 	# Use the 0-th and 1-st channels
-# 	channels = [0, 1]
-# 	hist1= cv2.calcHist([character], channels, None, histSize, ranges, accumulate=False)
-# 	cv2.normalize(hist1, hist1, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX)
-
-# 	hist1 = cv2.calcHist([character],[0],None,[256],[0,256])
-# 	num_points = len(segmentation_points)
-# 	hist_result = []
-# 	for i in range(num_points):
-# 		if(i+3) >= num_points:
-# 			break
-# 		s = segmentation_points[i]
-# 		f = segmentation_points[i+3]
-# 		section = image[:,s[0]:f[0]]
-# 		cv2.cvtColor(section, cv2.COLOR_BGR2HSV)
-# 		(y,x,_) = section.shape
-# 		startx = x//2-(cropx//2)
-# 		starty = y//2-(cropy//2)    
-# 		section =section[starty:starty+cropy,startx:startx+cropx]
-# 		print(section.shape)
-# 		hist2= cv2.calcHist([section], channels, None, histSize, ranges, accumulate=False)
-# 		cv2.normalize(hist1, hist1, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX)
-# 		res = cv2.compareHist(hist1, hist2, cv2.HISTCMP_CORREL)
-# 		hist_result.append(res)
-# 	print(hist_result)
 def char_test(deleted_indices,segmentation_points,image,character,thr):
 	# print(type(image))
 	character = cv2.cvtColor(character, cv2.COLOR_RGB2GRAY)	
@@ -113,7 +78,9 @@ def char_test(deleted_indices,segmentation_points,image,character,thr):
 		if r in segmentation_points:
 			segmentation_points.remove(r)
 
-# def hough_test()
+def hough_test(deleted_indices,segmentation_points,image,character):
+    
+    
 
 def segment(image, words_iter):
 	(ys , xs , _)= image.shape
