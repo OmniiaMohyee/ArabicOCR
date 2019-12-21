@@ -3,7 +3,7 @@ import numpy as np
 from scipy.signal import argrelextrema
 import copy
 from PIL import Image
-import generalized_hough_demo 
+from generalized_hough_demo import hough_match
 ## SKEW DETECTION.
 #1- Binarizing the image.
 im_name = "c1.png"
@@ -55,7 +55,7 @@ def char_test(deleted_indices,segmentation_points,image,character,thr):
 		matches[i][0] = normalized[i]
 	matches.sort(key =lambda x:x[0])
 	normalized_matches = matches
-	print(normalized_matches)
+	# print(normalized_matches)
 
 	k =0 
 	for k in range(len(normalized_matches)):
@@ -78,9 +78,14 @@ def char_test(deleted_indices,segmentation_points,image,character,thr):
 		if r in segmentation_points:
 			segmentation_points.remove(r)
 
-def hough_test(deleted_indices,segmentation_points,image,character):
-    pass
-    
+def hough_test(im,image,character):
+
+	rstart,rend,cstart,cend ,max_v = hough_match(image,character)
+	print(max_v)
+	im[rstart:rend, cstart] = (255,0,0)
+	im[rstart:rend, cend] = (255,0,0)
+	im[rstart, cstart:cend] = (255,0,0)
+	im[rend, cstart:cend] = (255,0,0)
 
 def segment(image, words_iter):
 	(ys , xs , _)= image.shape
@@ -138,7 +143,6 @@ def segment(image, words_iter):
 		segmentation_points = []
 		epsilon = 0.1*cv2.arcLength(cnt,True)
 		approx = cv2.approxPolyDP(cnt,epsilon,True)
-		# print(cnt)
 
 		h_line_hist = np.count_nonzero(thresh,axis=1)
 		v_line_hist = np.count_nonzero(thresh,axis=0)
@@ -161,13 +165,12 @@ def segment(image, words_iter):
 		threshold = 3
 		base_line = line_index 
 		# image[base_line,:]=(0,0,255)
-		# print(list(cnt)[0])
 		list = []
 		for i in range(0,len(cnt)):
 			x = cnt[i][0][0]
 			y = cnt[i][0][1]
 			list.append((x,y))
-		# print(list)
+
 		right = list.index(rightmost)
 		left = list.index(leftmost)
 		top = list.index(topmost)
@@ -175,7 +178,6 @@ def segment(image, words_iter):
 		l=[]
 		lower_contour = []
 		splitting_index = 0
-		# print(left)
 		k=0
 		right_reached =False 
 		left_reached = False
@@ -192,9 +194,7 @@ def segment(image, words_iter):
 			if y <= base_line and [x,y] not in l:
 				k+=1
 				l.append([x,y])
-				# print(x,leftmost[0])
 		list =l[splitting_index+1:len(l)] + l[0:splitting_index] 
-		# print(splitting_index,len(l))
 		# cv2.drawContours(image, [np.asarray(l[splitting_index:len(l)])], 0, (0,255,0), 1)
 		# cv2.drawContours(image,[np.asarray(l[0:splitting_index])], 0, (0,255,0), 1)
 		# cv2.drawContours(image,[cnt], 0, (0,255,0), 1)
@@ -204,7 +204,6 @@ def segment(image, words_iter):
 
 		list=list[::-1]
 
-		# print(defects)
 		list_x=[]
 		list_y=[]
 		# list_x = list[:,0]
@@ -226,11 +225,8 @@ def segment(image, words_iter):
 			# cv2.circle(image,(int(x),int(y)), 1, (0, 0, 255), -1)
 
 		# minimas = argrelextrema(np.asarray(list_x), np.less)
-		# print(list_y)
 		maximas = (np.diff(np.sign(np.diff(np.asarray(list_y)))) > 0).nonzero()[0] + 1 # local min
 		minimas = (np.diff(np.sign(np.diff(np.asarray(list_y)))) < 0).nonzero()[0] + 1 # local min
-		# print([[list_x[i],list_y[i]] for i in maximas] )
-		# print([[list_x[i],list_y[i]] for i in minimas] )
 
 		min_list = []
 		max_list = []
@@ -238,7 +234,6 @@ def segment(image, words_iter):
 		min_threshold = 25
 		for m in minimas:
 			x,y=[list_x[m],list_y[m]]
-			# print(base_line,y)
 			if(y < base_line-min_threshold):
 				list.remove([x,y])
 				continue
@@ -272,9 +267,9 @@ def segment(image, words_iter):
 			except:
 				pass
 		# cv2.imwrite("cnt/contoured.png",image)
-		if( len(min_list) == 0 or len(max_list ) == 0):
-			continue
-		temp_y = [row[1] for row in max_list]
+		# if( len(min_list) == 0 or len(max_list ) == 0):
+		# 	continue
+		# temp_y = [row[1] for row in max_list]
 		max_hight = 200
 		splitting_points =[]
 		x,y = leftmost
@@ -283,13 +278,13 @@ def segment(image, words_iter):
 		avg_char_width = 105
 		avg_char_area = 300
 
-		# for m in range(len(min_list)):
-		# 	[x,y] = min_list[m]
-		# 	index = min_max.index([x,y])
-		# 	prev = min_max[index-1]
-		# 	i+=1
-		# 	if prev in max_list or :		
-		# 		splitting_points.append([x,y])
+		for m in range(len(min_list)):
+			[x,y] = min_list[m]
+			index = min_max.index([x,y])
+			prev = min_max[index-1]
+			i+=1
+			if prev in max_list  :		
+				splitting_points.append([x,y])
 		
 
 		prev_point = leftmost
@@ -298,7 +293,6 @@ def segment(image, words_iter):
 		segmentation_points.append([x,y])
 		if([x,y] not in min_list):
 			min_list = [[x,y]] + min_list
-		# print(segmentation_points)
 		x,y =rightmost
 		splitting_points.append([x,y])
 		deleted_indices = []
@@ -314,7 +308,7 @@ def segment(image, words_iter):
 		seen2=cv2.imread('cnt/seen2.png')
 		# char_test(deleted_indices,min_list,thresh,seen2,0.1)
 
-		for s in min_list :
+		for s in splitting_points :
 			x = s[0]
 			y = s[1]
 			if((x,y) == leftmost):
@@ -325,8 +319,6 @@ def segment(image, words_iter):
 			prev_max = min_max[index -1]
 			next_max = -1
 			for k in range(index+1,len(min_max)):
-				# print(min_max[k])
-				# print(max_list)
 				if(min_max[k] in max_list):
 					next_max = min_max[k]
 					break
@@ -355,7 +347,7 @@ def segment(image, words_iter):
 			elif prev_point[0]-prev_prev[0] >= avg_char_width and x-prev_point[0] >= avg_char_width/2 :
 				pass
 			else:
-				# cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(0,255,255),2)
+				cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(0,255,255),2)
 				if(prev_point in segmentation_points):
 					segmentation_points.remove(prev_point)
 				prev_point = s
@@ -400,7 +392,7 @@ def segment(image, words_iter):
 	chars = [row[1] for row in chars]
 	i =1
 	for c in chars:
-		cv2.imwrite("cnt/char_"+str(i)+".png",c)
+		cv2.imwrite("cnt/char_"+str(words_iter)+'__'+str(i)+".png",c)
 		i+=1
 	cv2.imwrite("cnt/contoured."+str(words_iter)+".png",image)  
 	cv2.imwrite("cnt/thresh.png",thresh)

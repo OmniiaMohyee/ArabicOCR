@@ -76,7 +76,3 @@ def draw_vert_hist(bin_img, not_bin_img,threshold):
         result_words.append(result)
         word += 1
     return result_words_bin,result_words_not_bin
-
-
-
-
