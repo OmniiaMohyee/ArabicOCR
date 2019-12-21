@@ -100,9 +100,11 @@ def segment(image, words_iter):
 	# 		if gray[i][j] > 250:
 	# 			gray[i][j] = 255
 	# 		else:
-	# 			gray[i][j] = 0
+	# 			gray[i][j] =- 0
 	cv2.imwrite("cnt/gray.png",gray)
-	thresh = cv2.threshold(gray, 160, 255,cv2.THRESH_BINARY)[1]
+	thresh = cv2.threshold(gray, 135, 255,cv2.THRESH_BINARY)[1]
+	thresh2 = cv2.threshold(gray, 100, 255,cv2.THRESH_BINARY)[1]
+
 	thresh_unaltered = copy.copy(thresh)
 	# thresh = gray	
 	# thresh = cv2.blur(thresh,(2,2))
@@ -386,7 +388,7 @@ def segment(image, words_iter):
 			shift = 5
 			if prev_point[0]!= segment[0]:
 				cv2.line(image,(int(x)+shift,int(y)-50),(int(x)+shift,int(y)+50),(0,0,255),1)
-				char = thresh_unaltered[:,prev_point[0]:segment[0]+shift]
+				char = thresh2[:,prev_point[0]:segment[0]+shift]
 				chars.append([x,char])
 			prev_point = segment
 	# print(len(chars))
