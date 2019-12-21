@@ -23,7 +23,7 @@ def build_association_file():
     scanned_chars_iter = 0
     #prepare output file
     csv_file = open('dataset.csv', encoding='utf-8', mode='w')
-    writer = csv.DictWriter(csv_file, fieldnames=['char','code','path'])
+    writer = csv.DictWriter(csv_file, fieldnames=['char','path'])
     writer.writeheader()
 
     for data_point in data_points:

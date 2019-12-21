@@ -81,11 +81,11 @@ def char_test(deleted_indices,segmentation_points,image,character,thr):
 def hough_test(im,image,character):
 
 	rstart,rend,cstart,cend ,max_v = hough_match(image,character)
-	print(max_v)
-	im[rstart:rend, cstart] = (255,0,0)
-	im[rstart:rend, cend] = (255,0,0)
-	im[rstart, cstart:cend] = (255,0,0)
-	im[rend, cstart:cend] = (255,0,0)
+	# print(max_v)
+	# im[rstart:rend, cstart] = (255,0,0)
+	# im[rstart:rend, cend] = (255,0,0)
+	# im[rstart, cstart:cend] = (255,0,0)
+	# im[rend, cstart:cend] = (255,0,0)
 
 def segment(image, words_iter):
 	(ys , xs , _)= image.shape
@@ -134,7 +134,7 @@ def segment(image, words_iter):
 		cnt = contours[t]
 		cv2.drawContours(image, [cnt], 0, (0,255,0), 1)
 		# cv2.imwrite("cnt/contoured.png",image)
-
+		# print(hierarchy[0,t,3],normalized_areas[t])
 		if(hierarchy[0,t,3] != -1 ):
 			continue
 		elif normalized_areas[t] < 0.1 :
@@ -164,7 +164,7 @@ def segment(image, words_iter):
 
 		threshold = 3
 		base_line = line_index 
-		# image[base_line,:]=(0,0,255)
+		image[base_line,:]=(0,255,255)
 		list = []
 		for i in range(0,len(cnt)):
 			x = cnt[i][0][0]
@@ -231,7 +231,7 @@ def segment(image, words_iter):
 		min_list = []
 		max_list = []
 
-		min_threshold = 25
+		min_threshold = 10
 		for m in minimas:
 			x,y=[list_x[m],list_y[m]]
 			if(y < base_line-min_threshold):
@@ -240,8 +240,8 @@ def segment(image, words_iter):
 			# cv2.circle(image,(int(x),int(y)), 1, (255, 0, 0), -1)
 			min_list.append([x,y])
 			
-		threshold = 70
-		# image[base_line-threshold]=(255,255,0)
+		threshold = 50
+		image[base_line-threshold]=(255,255,0)
 		for m in maximas:
 			x,y=[list_x[m],list_y[m]]
 			blue = image[y][x][0]
@@ -275,7 +275,7 @@ def segment(image, words_iter):
 		x,y = leftmost
 		splitting_points.append([x,y])
 		i = 1
-		avg_char_width = 105
+		avg_char_width = 100
 		avg_char_area = 300
 
 		for m in range(len(min_list)):
@@ -334,20 +334,18 @@ def segment(image, words_iter):
 			# print(diff_min)
 			# print(prev_hight , max_hight)
 			# print(s, rightmost )
-			if((diff_min >= avg_char_width)):
-				# cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(0,0,255),2)
-				segmentation_points.append([x,y])
-				prev_prev = prev_point
-				prev_point = s
-			elif (prev_point[0] == leftmost[0] or x == rightmost[0]) and prev_hight >= max_hight and diff_min >= avg_char_width/3 :
+			if (prev_point[0] == leftmost[0] or x == rightmost[0]) and prev_hight >= max_hight and diff_min >= avg_char_width/3 :
 				# cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(255,0,0),2)
 				segmentation_points.append([x,y])
 				prev_prev = prev_point
 				prev_point = s
-			elif prev_point[0]-prev_prev[0] >= avg_char_width and x-prev_point[0] >= avg_char_width/2 :
-				pass
+			elif((diff_min >= avg_char_width)):
+    				# cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(0,0,255),2)
+				segmentation_points.append([x,y])
+				prev_prev = prev_point
+				prev_point = s
 			else:
-				cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(0,255,255),2)
+				# cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(0,255,255),2)
 				if(prev_point in segmentation_points):
 					segmentation_points.remove(prev_point)
 				prev_point = s
@@ -356,25 +354,26 @@ def segment(image, words_iter):
 		num_points = len(segmentation_points)
 
 
-
+		# print(segmentation_points)
 		try:
 			x,y =leftmost
 			segmentation_points.index([x,y])
 		except:
 			segmentation_points = [[x,y]] + segmentation_points[0:num_points]
 			num_points+=1
+		# print(segmentation_points)
+			
 		try:
 			x,y =rightmost
 			segmentation_points.index([x,y])
 		except:
 			segmentation_points.append([x,y])
 			num_points+=1
-		
+		# print(segmentation_points)		
 		num_points = len(segmentation_points)
 		for i in range(1,num_points):
 
 			segment = segmentation_points[i]
-			# print(segment)
 			x = segment[0]
 			y = segment[1]
 			shift = 5
@@ -382,9 +381,8 @@ def segment(image, words_iter):
 				cv2.line(image,(int(x)+shift,int(y)-50),(int(x)+shift,int(y)+50),(0,0,255),1)
 				char = thresh_unaltered[:,prev_point[0]:segment[0]+shift]
 				chars.append([x,char])
-			# print(prev_point[0],segment[0])
-			# print(char)
 			prev_point = segment
+	# print(len(chars))
 	# xs = [row[0] for row in chars]
 	# print(xs)
 	chars.sort(key= lambda x :x[0])
