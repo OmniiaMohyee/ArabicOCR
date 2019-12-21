@@ -14,8 +14,8 @@ from PIL import Image
 
 def build_association_file():
     # general intializations
-    data_points = glob.glob("../clean_dataset/scanned/scanned/capr3.png")
-    labels = glob.glob('../clean_dataset/text/text/capr3.txt')
+    data_points = glob.glob("../clean_dataset/scanned/scanned/capr2.png")
+    labels = glob.glob('../clean_dataset/text/text/capr2.txt')
     right = 0
     wrong = 0 
     text = []
