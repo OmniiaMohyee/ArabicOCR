@@ -102,7 +102,7 @@ def segment(image, words_iter):
 	# 		else:
 	# 			gray[i][j] = 0
 	cv2.imwrite("cnt/gray.png",gray)
-	thresh = cv2.threshold(gray, 250, 255,cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+	thresh = cv2.threshold(gray, 160, 255,cv2.THRESH_BINARY)[1]
 	thresh_unaltered = copy.copy(thresh)
 	# thresh = gray	
 	# thresh = cv2.blur(thresh,(2,2))
@@ -211,7 +211,6 @@ def segment(image, words_iter):
 		# indexes = np.unique(list_x, return_index=True)[1]
 		# list_x = [list_x[index] for index in sorted(indexes)]
 		last_y = 0
-
 		l=copy.copy(list)
 		for i in range(len(l)):
 			y= l[i][1]
@@ -240,15 +239,18 @@ def segment(image, words_iter):
 			# cv2.circle(image,(int(x),int(y)), 1, (255, 0, 0), -1)
 			min_list.append([x,y])
 			
-		threshold = 50
+		threshold = 0
 		image[base_line-threshold]=(255,255,0)
+		
 		for m in maximas:
 			x,y=[list_x[m],list_y[m]]
 			blue = image[y][x][0]
 			green =image[y][x][1]
 			red = image[y][x][2]
-			# if(y < (base_line-threshold) and blue <= 100 and green <= 100 and red <= 100):
+			color = gray[y][x]
+			print(color)
 			if(y < (base_line-threshold)):
+			# if(y < (base_line-threshold)):
 				max_list.append([x,y])
 		min_max=[]
 		for i in range(len(list)):
@@ -275,7 +277,8 @@ def segment(image, words_iter):
 		x,y = leftmost
 		splitting_points.append([x,y])
 		i = 1
-		avg_char_width = 100
+		avg_char_width_mid = 100
+		avg_char_width_end = 110
 		avg_char_area = 300
 
 		for m in range(len(min_list)):
@@ -293,7 +296,7 @@ def segment(image, words_iter):
 		segmentation_points.append([x,y])
 		if([x,y] not in min_list):
 			min_list = [[x,y]] + min_list
-		x,y =rightmost
+		x,y = rightmost
 		splitting_points.append([x,y])
 		deleted_indices = []
 
@@ -322,7 +325,7 @@ def segment(image, words_iter):
 				if(min_max[k] in max_list):
 					next_max = min_max[k]
 					break
-			diff_max = avg_char_width
+			diff_max = avg_char_width_mid
 
 			if(next_max != -1):
 				diff_max = next_max[0] - prev_max[0]	
@@ -331,19 +334,23 @@ def segment(image, words_iter):
 			if(abs(s[0]-prev_max[0]) < step):
 				continue
 			prev_hight =base_line-prev_max[1] 
-			# print(diff_min)
-			# print(prev_hight , max_hight)
-			# print(s, rightmost )
-			if (prev_point[0] == leftmost[0] or x == rightmost[0]) and prev_hight >= max_hight and diff_min >= avg_char_width/3 :
+			print(diff_min)
+			print(prev_hight , max_hight)
+			print(s, rightmost )
+			if (prev_point[0] == leftmost[0] or x == rightmost[0]) and prev_hight >= max_hight and diff_min >= avg_char_width_mid/3 :
 				# cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(255,0,0),2)
 				segmentation_points.append([x,y])
 				prev_prev = prev_point
 				prev_point = s
-			elif((diff_min >= avg_char_width)):
+			elif((diff_min >= avg_char_width_mid) and prev_point[0] != leftmost[0]):
     				# cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(0,0,255),2)
 				segmentation_points.append([x,y])
 				prev_prev = prev_point
 				prev_point = s
+			elif (diff_min >= avg_char_width_end and prev_point[0] == leftmost[0]):
+				segmentation_points.append([x,y])
+				prev_prev = prev_point
+				prev_point = s    				
 			else:
 				# cv2.line(image,(int(x),int(y)-50),(int(x),int(y)+50),(0,255,255),2)
 				if(prev_point in segmentation_points):
