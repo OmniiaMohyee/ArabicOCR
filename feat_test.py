@@ -52,6 +52,7 @@ def get_Regions(img):
     return Regions
 
 def getFeatureVector(cropped_img):
+    cv2.imwrite("hii.png", cropped_img)
     FeatureVector = []
     height, width = cropped_img.shape
     FeatureVector.append(height/width) #1. height/width
@@ -71,10 +72,7 @@ def getFeatureVector(cropped_img):
         black.append(b)
         white.append(w)
     for i in range(4):
-        if white[i] != 0:
-            FeatureVector.append(black[i]/white[i])
-        else:
-            FeatureVector.append(1)
+        FeatureVector.append(black[i]/white[i])
         FeatureVector.append(black[i]/char_size) #add.2 distribution features: for each quadrat -> Q/A
     #distribution features: for halves
     FeatureVector.append((black[0]+black[1])/char_size) # U/A
@@ -83,10 +81,7 @@ def getFeatureVector(cropped_img):
     FeatureVector.append((black[1]+black[3])/char_size) # R/A
     for i in range(3):
         for j in range(i+1, 4):
-            if black[j] != 0:
-                FeatureVector.append(black[i]/black[j])
-            else:
-                FeatureVector.append(1)
+            FeatureVector.append(black[i]/black[j])
     num_contours, (cx, cy), nu = contours_and_cetroid(cropped_img)
     # FeatureVector.append(num_contours) #add. may be helpful
     FeatureVector.append(cx) #add.centroid may be helpful

@@ -432,8 +432,8 @@ def segment(image, words_iter):
 	chars = [row[1] for row in chars]
 	i =1
 	for c in chars:
-		cv2.imwrite("char_"+str(i)+".png",c)
+		# cv2.imwrite("char_"+str(i)+".png",c)
 		i+=1
-	cv2.imwrite("contoured."+str(words_iter)+".png",image)  
+	# cv2.imwrite("contoured."+str(words_iter)+".png",image)  
 	return chars
 # cs = segment(image)

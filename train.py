@@ -31,7 +31,8 @@ for path in Paths:
     # print(img.shape)
     img_grey = cv2.cvtColor(img,cv2.COLOR_RGB2GRAY)
     _, bw_img = cv2.threshold(img_grey,127,255,cv2.THRESH_BINARY) #convert to binary
-    cropped_img = crop_image(bw_img)
+    black_char = cv2.bitwise_not(bw_img) #back to black char
+    cropped_img = crop_image(black_char)
     i+=1
     print(i)
     cv2.imwrite('train/'+str(i)+'.png',cropped_img)

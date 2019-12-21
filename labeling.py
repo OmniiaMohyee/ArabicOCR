@@ -3,6 +3,7 @@ import preprocess
 import word_segment
 import contour
 import statistical_features
+import feat_test
 #---------------------
 import csv
 import pandas as pd 
@@ -59,16 +60,18 @@ def build_association_file():
                 for c in text[words_iter]:
                     cv2.imwrite("chars/char_"+str(text_chars_iter)+".png", chars[scanned_chars_iter])
                     writer.writerow({'char': c, 'path' : "chars/char_"+str(text_chars_iter)+".png"})
+                    # feat_test.getFeatureVector(chars[scanned_chars_iter])
                     text_chars_iter += 1
                     scanned_chars_iter += 1
+                    
             words_iter += 1
-            if words_iter >= len(text): #just to prevent craching till word segmentation is right
-                break
+            # if words_iter >= len(text): #just to prevent craching till word segmentation is right
+            #     break
     print("rights = ", right)
     print("wrong = ", wrong)
     csv_file.close()
     # encode character labels into numbers
-    df = pd.read_csv('dataset.csv')
-    label_encoder = preprocessing.LabelEncoder() 
-    df['code']= label_encoder.fit_transform(df['char']) # Encode labels in column 'char
-    df.to_csv('dataset.csv')
+    # df = pd.read_csv('dataset.csv')
+    # label_encoder = preprocessing.LabelEncoder() 
+    # df['code']= label_encoder.fit_transform(df['char']) # Encode labels in column 'char
+    # df.to_csv('dataset.csv')

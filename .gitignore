@@ -4,3 +4,4 @@ __pycache__/*
 chars/*
 *.png
 features/__pycache__/*
+**/__pycache__
