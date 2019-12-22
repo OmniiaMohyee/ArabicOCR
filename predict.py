@@ -68,7 +68,7 @@ for data_point in data_points:
     print(taken_time)
     #7- write text
     with open('output/running_time.txt','a')as running:
-        running.writelines(str(taken_time))
+        running.write(str(taken_time)+'\n')
     with open('output/text/'+name+'.txt','w',encoding='utf-8')as f:
         for i in range(len(Text)):
             for j in range(len(Text[i])):
