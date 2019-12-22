@@ -16,7 +16,7 @@ from sklearn.tree import DecisionTreeClassifier
 
 from sklearn import preprocessing
 
-train_df = pd.read_csv('dataset.csv')
+train_df = pd.read_csv('datasetCopy.csv')
 Paths = train_df["path"]
 Labels = train_df["code"]
 
@@ -31,30 +31,14 @@ for path in Paths:
     img_grey = cv2.cvtColor(img,cv2.COLOR_RGB2GRAY)
     _, bw_img = cv2.threshold(img_grey,127,255,cv2.THRESH_BINARY) #convert to binary
     black_char = cv2.bitwise_not(bw_img) #back to black char
-    cropped_img = crop_image(black_char)
-    Features.append(getFeatureVector(cropped_img)) 
+    resized = cv2.resize(black_char,(28,28))
+    Feature = np.reshape(resized, 784)
+    Features.append(Feature)
+    # cropped_img = crop_image(black_char)
+    # Features.append(getFeatureVector(cropped_img)) 
 print(len(Features))
-
-
-#tasks
-#1- read image from path
-#2- read labels and encode them
-#3- map each image to the feature vector
-#4- divide the dataset into training and test set -----> lesssaaaaaa
-#5- write the output of predict into a file ----->>>
-#6- save the model 
-folder ='savedmodels/trial1again/'
-#####  ConvergenceWarning: lbfgs failed to converge (status=1): STOP: TOTAL NO. of ITERATIONS REACHED LIMIT.
-# #Logitic Regression 
-# logreg = LogisticRegression()
-# logreg.fit(Features, Labels)
-# # Y_pred = logreg.predict(X_test)
-# acc_log = round(logreg.score(Features, Labels) * 100, 2)
-# print(acc_log)
-# # save the model to disk
-# filename = folder+'Logistic_regression.sav'
-# pickle.dump(logreg, open(filename, 'wb'))
-
+print(len(Labels))
+folder ='savedmodels/trial2/'
 
 # Support Vector Machines
 svc = SVC()
@@ -133,12 +117,3 @@ print(acc_random_forest)
 filename = folder+'random_forest'+str(acc_random_forest)+'.sav'
 pickle.dump(random_forest, open(filename, 'wb'))
 
-# models = pd.DataFrame({
-#     'Model': ['Support Vector Machines', 'KNN', 'Logistic Regression', 
-#               'Random Forest', 'Naive Bayes', 'Perceptron', 
-#               'Stochastic Gradient Decent', 'Linear SVC', 
-#               'Decision Tree'],
-#     'Score': [acc_svc, acc_knn, acc_log, 
-#               acc_random_forest, acc_gaussian, acc_perceptron, 
-#               acc_sgd, acc_linear_svc, acc_decision_tree]})
-# print(models.sort_values(by='Score', ascending=False))
