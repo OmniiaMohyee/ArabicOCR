@@ -3,21 +3,30 @@ import numpy as np
 
 
 # 1.exact width and height
-def crop_image(img):
-    img_height, img_width = img.shape
-    first_row = img_height
-    first_col = img_width
-    last_row = 0
-    last_col = 0
-    for i in range(img_height):
-        for j in range(img_width):
-            if img[i][j] == 0:
-                first_row = min(first_row, i)
-                first_col = min(first_col, j)
-                last_row = max(last_row, i)
-                last_col = max(last_col, j)
-    cropped = img[first_row:last_row, first_col:last_col]
-    # cv2.imshow("img",cropped)
+# def crop_image(img):
+#     img_height, img_width = img.shape
+#     first_row = img_height
+#     first_col = img_width
+#     last_row = 0
+#     last_col = 0
+#     for i in range(img_height):
+#         for j in range(img_width):
+#             if img[i][j] == 0:
+#                 first_row = min(first_row, i)
+#                 first_col = min(first_col, j)
+#                 last_row = max(last_row, i)
+#                 last_col = max(last_col, j)
+#     cropped = img[first_row:last_row, first_col:last_col]
+#     # cv2.imshow("img",cropped)
+#     return cropped
+def crop_image(image): # --> thresholded image
+    # Mask of non-black pixels # works for white char on black background
+    white_char = cv2.bitwise_not(image)
+    mask = white_char > 0
+    coords = np.argwhere(mask)
+    x0, y0 = coords.min(axis=0)
+    x1, y1 = coords.max(axis=0) + 1
+    cropped = image[x0:x1, y0:y1]
     return cropped
 
 def horizontal_transitions(img):

@@ -18,38 +18,23 @@ from sklearn import preprocessing
 
 train_df = pd.read_csv('dataset.csv')
 Paths = train_df["path"]
-Chars = train_df["char"]
 Labels = train_df["code"]
 
-# label_encoder = preprocessing.LabelEncoder() 
-# Labels= label_encoder.fit_transform(Chars) 
-# np.save('label_encoder.npy', label_encoder.classes_)
 
 Paths = list(Paths)
-Chars = list(Chars)
-# print(Chars)
 Labels = list(Labels)
 Features =[]
-# i=0
 for path in Paths:
-    # print(path)
+
     img = cv2.imread(path)
     # print(img.shape)
     img_grey = cv2.cvtColor(img,cv2.COLOR_RGB2GRAY)
     _, bw_img = cv2.threshold(img_grey,127,255,cv2.THRESH_BINARY) #convert to binary
     black_char = cv2.bitwise_not(bw_img) #back to black char
     cropped_img = crop_image(black_char)
-    # i+=1
-    # print(i)
-    # cv2.imwrite('train/'+str(i)+'.png',cropped_img)
-    # img_gray = cv2.cvtColor(img,cv2.COLOR_RGB2GRAY) #black char
-    # image_gray = cv2.bitwise_not(img_gray) #white char
-    # image_thresholded = cv2.threshold(img_gray, 127, 255, cv2.THRESH_BINARY| cv2.THRESH_OTSU)[1]
-    # cropped_img = crop_image(image_thresholded)
     Features.append(getFeatureVector(cropped_img)) 
-    # print(getFeatureVector(cropped_img))
 print(len(Features))
-print(len(Chars))
+
 
 #tasks
 #1- read image from path
@@ -58,7 +43,7 @@ print(len(Chars))
 #4- divide the dataset into training and test set -----> lesssaaaaaa
 #5- write the output of predict into a file ----->>>
 #6- save the model 
-
+folder ='savedmodels/trial1again/'
 #####  ConvergenceWarning: lbfgs failed to converge (status=1): STOP: TOTAL NO. of ITERATIONS REACHED LIMIT.
 # #Logitic Regression 
 # logreg = LogisticRegression()
@@ -67,27 +52,28 @@ print(len(Chars))
 # acc_log = round(logreg.score(Features, Labels) * 100, 2)
 # print(acc_log)
 # # save the model to disk
-# filename = 'Logistic_regression.sav'
+# filename = folder+'Logistic_regression.sav'
 # pickle.dump(logreg, open(filename, 'wb'))
 
 
-# # Support Vector Machines
-# svc = SVC()
-# svc.fit(Features, Labels)
-# # Y_pred = svc.predict(X_test)
-# acc_svc = round(svc.score(Features, Labels) * 100, 2)
-# print(acc_svc)
-# filename = 'SVM.sav'
-# pickle.dump(svc, open(filename, 'wb'))
+# Support Vector Machines
+svc = SVC()
+svc.fit(Features, Labels)
+# Y_pred = svc.predict(X_test)
+acc_svc = round(svc.score(Features, Labels) * 100, 2)
+print(acc_svc)
+filename = folder+'SVM'+str(acc_svc)+'.sav'
+pickle.dump(svc, open(filename, 'wb'))
 
 
-# #KNN
-# knn = KNeighborsClassifier(n_neighbors = 3)
-# knn.fit(X_train, Y_train)
+#KNN
+knn = KNeighborsClassifier(n_neighbors = 5)
+knn.fit(Features, Labels)
 # Y_pred = knn.predict(X_test)
-# acc_knn = round(knn.score(X_train, Y_train) * 100, 2)
-# print(acc_knn)
-
+acc_knn = round(knn.score(Features, Labels) * 100, 2)
+print(acc_knn)
+filename = folder+'knn'+str(acc_knn)+'.sav'
+pickle.dump(knn, open(filename, 'wb'))
 
 # Gaussian Naive Bayes
 gaussian = GaussianNB()
@@ -95,7 +81,7 @@ gaussian.fit(Features, Labels)
 # Y_pred = gaussian.predict(X_test)
 acc_gaussian = round(gaussian.score(Features, Labels) * 100, 2)
 print(acc_gaussian)
-filename = 'Naive_Bayes'+str(acc_gaussian)+'.sav'
+filename = folder+'Naive_Bayes'+str(acc_gaussian)+'.sav'
 pickle.dump(gaussian, open(filename, 'wb'))
 
 
@@ -106,7 +92,7 @@ perceptron.fit(Features, Labels)
 # Y_pred = perceptron.predict(X_test)
 acc_perceptron = round(perceptron.score(Features, Labels) * 100, 2)
 print(acc_perceptron)
-filename = 'perceptron'+str(acc_perceptron)+'.sav'
+filename = folder+'perceptron'+str(acc_perceptron)+'.sav'
 pickle.dump(perceptron, open(filename, 'wb'))
 
 # Linear SVC
@@ -115,7 +101,7 @@ linear_svc.fit(Features, Labels)
 # Y_pred = linear_svc.predict(X_test)
 acc_linear_svc = round(linear_svc.score(Features, Labels) * 100, 2)
 print(acc_linear_svc)
-filename = 'linear_svc'+str(acc_linear_svc)+'.sav'
+filename = folder+'linear_svc'+str(acc_linear_svc)+'.sav'
 pickle.dump(linear_svc, open(filename, 'wb'))
 
 # Stochastic Gradient Descent
@@ -124,7 +110,7 @@ sgd.fit(Features, Labels)
 # Y_pred = sgd.predict(X_test)
 acc_sgd = round(sgd.score(Features, Labels) * 100, 2)
 print(acc_sgd)
-filename = 'sgd'+str(acc_sgd)+'.sav'
+filename = folder+'sgd'+str(acc_sgd)+'.sav'
 pickle.dump(sgd, open(filename, 'wb'))
 
 # Decision Tree
@@ -133,7 +119,7 @@ decision_tree.fit(Features, Labels)
 # Y_pred = decision_tree.predict(X_test)
 acc_decision_tree = round(decision_tree.score(Features, Labels) * 100, 2)
 print(acc_decision_tree)
-filename = 'decision_tree'+str(acc_decision_tree)+'.sav'
+filename = folder+'decision_tree'+str(acc_decision_tree)+'.sav'
 pickle.dump(decision_tree, open(filename, 'wb'))
 
 
@@ -144,7 +130,7 @@ random_forest.fit(Features, Labels)
 # random_forest.score(X_train, Y_train)
 acc_random_forest = round(random_forest.score(Features, Labels) * 100, 2)
 print(acc_random_forest)
-filename = 'random_forest'+str(acc_random_forest)+'.sav'
+filename = folder+'random_forest'+str(acc_random_forest)+'.sav'
 pickle.dump(random_forest, open(filename, 'wb'))
 
 # models = pd.DataFrame({

@@ -16,7 +16,7 @@ from features.feat_test import crop_image,getFeatureVector
 #Tasks
 #1- load model
 # load the model from disk
-filename = 'savedmodels/decision_tree99.0.sav'
+filename = 'savedmodels/trial1/knn88.11.sav'
 decision_tree = pickle.load(open(filename, 'rb'))
 # Y_pred = decision_tree.predict(X_test)
 # result = loaded_model.score(X_test, Y_test)
@@ -53,22 +53,18 @@ for data_point in data_points:
             cropped_img = crop_image(black_char)
             WordFeatures.append(getFeatureVector(cropped_img)) 
 
-            #5- predict
-            Y_pred = decision_tree.predict(WordFeatures)
-            TransformedLabels = encoder.inverse_transform(Y_pred)
-            Text.append(TransformedLabels)
-            # print(TransformedLabels)
-            # print(Text)
-        ij+=1
-        if ij>4:
-            break
+        #5- predict
+        Y_pred = decision_tree.predict(WordFeatures)
+        TransformedLabels = encoder.inverse_transform(Y_pred)
+        Text.append(TransformedLabels)
+
     #6- calculate time
     end_time= time.time()
     taken_time= end_time - start_time
     print(taken_time)
     #7- write text
     with open('output/running_time.txt','a')as running:
-        running.writelines(str(taken_time))
+        running.write(str(taken_time)+'\n')
     with open('output/text/'+name+'.txt','w',encoding='utf-8')as f:
         for i in range(len(Text)):
             for j in range(len(Text[i])):
@@ -77,4 +73,5 @@ for data_point in data_points:
 
 
 #8- To get acc run edit.py to get edit distance
+# python edit.py output/text realoutput
 
