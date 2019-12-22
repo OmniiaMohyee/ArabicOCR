@@ -67,7 +67,7 @@ pickle.dump(svc, open(filename, 'wb'))
 
 
 #KNN
-knn = KNeighborsClassifier(n_neighbors = 3)
+knn = KNeighborsClassifier(n_neighbors = 5)
 knn.fit(Features, Labels)
 # Y_pred = knn.predict(X_test)
 acc_knn = round(knn.score(Features, Labels) * 100, 2)
