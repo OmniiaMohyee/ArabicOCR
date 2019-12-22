@@ -2,11 +2,11 @@ import cv2 as cv
 import numpy as np
 import copy
 from matplotlib import pyplot as plt
-img = cv.imread('cnt/resized.png')
+img = cv.imread('cnt/contoured.3.png')
 (ys , xs , _)= img.shape
 print(img.shape)
 # img = cv.resize(img,(xs*5,ys*5), interpolation=cv.INTER_AREA)
-template = cv.imread('cnt/seen3.png')
+template = cv.imread('cnt/s22.png')
 w, h ,_ = template.shape
 print(template.shape)
 
@@ -34,7 +34,7 @@ cv.circle(img,(top_left[0],top_left[1]),1, (255, 0, 0), -1)
 
 bottom_right = (top_left[0] + h, top_left[1] + w)
 cv.rectangle(img,top_left, bottom_right, (0,0,255), 1)
-cv.imwrite("img.png",img)
+cv.imwrite("cnt/img.png",img)
 
 plt.subplot(121),plt.imshow(res,cmap = 'gray')
 plt.title('Matching Result'), plt.xticks([]), plt.yticks([])
