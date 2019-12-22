@@ -1,4 +1,6 @@
 import pickle
+import numpy as np
+from sklearn import preprocessing
 #Tasks
 #1- load model
 # load the model from disk
@@ -7,6 +9,9 @@ loaded_model = pickle.load(open(filename, 'rb'))
 # result = loaded_model.score(X_test, Y_test)
 # print(result)
 
+#Load encoder
+encoder = preprocessing.LabelEncoder()
+encoder.classes_ = np.load('classes.npy')
 
 #2- Read image from paths Tests
 

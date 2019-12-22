@@ -6,12 +6,15 @@ import contour
 import csv
 import glob
 import cv2
+import pandas as pd
+from sklearn import preprocessing
+import numpy as np
 
 
 def build_association_file():
     # general intializations
-    data_points = glob.glob("../scanned_patch/*.png")
-    labels = glob.glob('../text_patch/*.txt')
+    data_points = glob.glob("../clean_dataset/scanned/scanned/*.png")
+    labels = glob.glob('../clean_dataset/text/text/*.txt')
     tot_right = 0
     tot_wrong = 0
     data_point_it = 0
@@ -22,6 +25,7 @@ def build_association_file():
     writer = csv.DictWriter(csv_file, fieldnames=['char','path'])
     writer.writeheader()
 
+    i=0
     for data_point in data_points:
         right = 0
         wrong = 0 
@@ -58,7 +62,17 @@ def build_association_file():
         print("wrong = ", wrong)
         tot_right += right
         tot_wrong += wrong
+        i+=1
+        if i>8:
+            break
     csv_file.close()
     print("total right = ", tot_right)
     print("total wrong = ", tot_wrong)
    
+   # encode character labels into numbers
+    df = pd.read_csv('dataset.csv')
+    label_encoder = preprocessing.LabelEncoder() 
+    df['code']= label_encoder.fit_transform(df['char']) # Encode labels in column 'char
+    df.to_csv('dataset.csv')
+
+    np.save('label_encoder.npy', label_encoder.classes_)

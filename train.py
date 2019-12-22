@@ -14,18 +14,23 @@ from sklearn.linear_model import Perceptron
 from sklearn.linear_model import SGDClassifier
 from sklearn.tree import DecisionTreeClassifier
 
+from sklearn import preprocessing
 
 train_df = pd.read_csv('dataset.csv')
 Paths = train_df["path"]
-Labels = train_df["char"]
+Chars = train_df["char"]
+Labels = train_df["code"]
+
+# label_encoder = preprocessing.LabelEncoder() 
+# Labels= label_encoder.fit_transform(Chars) 
+# np.save('label_encoder.npy', label_encoder.classes_)
 
 Paths = list(Paths)
+Chars = list(Chars)
+# print(Chars)
 Labels = list(Labels)
-print(Labels)
-# print(Labels)
-# print(Paths)
 Features =[]
-i=0
+# i=0
 for path in Paths:
     # print(path)
     img = cv2.imread(path)
@@ -34,9 +39,9 @@ for path in Paths:
     _, bw_img = cv2.threshold(img_grey,127,255,cv2.THRESH_BINARY) #convert to binary
     black_char = cv2.bitwise_not(bw_img) #back to black char
     cropped_img = crop_image(black_char)
-    i+=1
-    print(i)
-    cv2.imwrite('train/'+str(i)+'.png',cropped_img)
+    # i+=1
+    # print(i)
+    # cv2.imwrite('train/'+str(i)+'.png',cropped_img)
     # img_gray = cv2.cvtColor(img,cv2.COLOR_RGB2GRAY) #black char
     # image_gray = cv2.bitwise_not(img_gray) #white char
     # image_thresholded = cv2.threshold(img_gray, 127, 255, cv2.THRESH_BINARY| cv2.THRESH_OTSU)[1]
@@ -44,7 +49,7 @@ for path in Paths:
     Features.append(getFeatureVector(cropped_img)) 
     # print(getFeatureVector(cropped_img))
 print(len(Features))
-print(len(Labels))
+print(len(Chars))
 
 #tasks
 #1- read image from path
@@ -54,28 +59,26 @@ print(len(Labels))
 #5- write the output of predict into a file ----->>>
 #6- save the model 
 
-logreg = LogisticRegression()
-logreg.fit(Features, Labels)
-# Y_pred = logreg.predict(X_test)
-acc_log = round(logreg.score(Features, Labels) * 100, 2)
-print(acc_log)
-# save the model to disk
-filename = 'Logistic_regression.sav'
-pickle.dump(model, open(filename, 'wb'))
-
-# # Logistic Regression
+#####  ConvergenceWarning: lbfgs failed to converge (status=1): STOP: TOTAL NO. of ITERATIONS REACHED LIMIT.
+# #Logitic Regression 
 # logreg = LogisticRegression()
-# logreg.fit(X_train, Y_train)
-# Y_pred = logreg.predict(X_test)
-# acc_log = round(logreg.score(X_train, Y_train) * 100, 2)
+# logreg.fit(Features, Labels)
+# # Y_pred = logreg.predict(X_test)
+# acc_log = round(logreg.score(Features, Labels) * 100, 2)
 # print(acc_log)
+# # save the model to disk
+# filename = 'Logistic_regression.sav'
+# pickle.dump(logreg, open(filename, 'wb'))
+
 
 # # Support Vector Machines
 # svc = SVC()
-# svc.fit(X_train, Y_train)
-# Y_pred = svc.predict(X_test)
-# acc_svc = round(svc.score(X_train, Y_train) * 100, 2)
+# svc.fit(Features, Labels)
+# # Y_pred = svc.predict(X_test)
+# acc_svc = round(svc.score(Features, Labels) * 100, 2)
 # print(acc_svc)
+# filename = 'SVM.sav'
+# pickle.dump(svc, open(filename, 'wb'))
 
 
 # #KNN
@@ -86,48 +89,63 @@ pickle.dump(model, open(filename, 'wb'))
 # print(acc_knn)
 
 
-# # Gaussian Naive Bayes
-# gaussian = GaussianNB()
-# gaussian.fit(X_train, Y_train)
+# Gaussian Naive Bayes
+gaussian = GaussianNB()
+gaussian.fit(Features, Labels)
 # Y_pred = gaussian.predict(X_test)
-# acc_gaussian = round(gaussian.score(X_train, Y_train) * 100, 2)
-# print(acc_gaussian)
+acc_gaussian = round(gaussian.score(Features, Labels) * 100, 2)
+print(acc_gaussian)
+filename = 'Naive_Bayes'+str(acc_gaussian)+'.sav'
+pickle.dump(gaussian, open(filename, 'wb'))
 
-# # Perceptron
-# perceptron = Perceptron(tol= not None)
-# perceptron.fit(X_train, Y_train)
+
+
+# Perceptron
+perceptron = Perceptron(tol= not None)
+perceptron.fit(Features, Labels)
 # Y_pred = perceptron.predict(X_test)
-# acc_perceptron = round(perceptron.score(X_train, Y_train) * 100, 2)
-# print(acc_perceptron)
+acc_perceptron = round(perceptron.score(Features, Labels) * 100, 2)
+print(acc_perceptron)
+filename = 'perceptron'+str(acc_perceptron)+'.sav'
+pickle.dump(perceptron, open(filename, 'wb'))
 
-# # Linear SVC
-# linear_svc = LinearSVC()
-# linear_svc.fit(X_train, Y_train)
+# Linear SVC
+linear_svc = LinearSVC()
+linear_svc.fit(Features, Labels)
 # Y_pred = linear_svc.predict(X_test)
-# acc_linear_svc = round(linear_svc.score(X_train, Y_train) * 100, 2)
-# print(acc_linear_svc)
+acc_linear_svc = round(linear_svc.score(Features, Labels) * 100, 2)
+print(acc_linear_svc)
+filename = 'linear_svc'+str(acc_linear_svc)+'.sav'
+pickle.dump(linear_svc, open(filename, 'wb'))
 
-# # Stochastic Gradient Descent
-# sgd = SGDClassifier(tol= not None)
-# sgd.fit(X_train, Y_train)
+# Stochastic Gradient Descent
+sgd = SGDClassifier(tol= not None)
+sgd.fit(Features, Labels)
 # Y_pred = sgd.predict(X_test)
-# acc_sgd = round(sgd.score(X_train, Y_train) * 100, 2)
-# print(acc_sgd)
+acc_sgd = round(sgd.score(Features, Labels) * 100, 2)
+print(acc_sgd)
+filename = 'sgd'+str(acc_sgd)+'.sav'
+pickle.dump(sgd, open(filename, 'wb'))
 
-# # Decision Tree
-# decision_tree = DecisionTreeClassifier()
-# decision_tree.fit(X_train, Y_train)
+# Decision Tree
+decision_tree = DecisionTreeClassifier()
+decision_tree.fit(Features, Labels)
 # Y_pred = decision_tree.predict(X_test)
-# acc_decision_tree = round(decision_tree.score(X_train, Y_train) * 100, 2)
-# print(acc_decision_tree)
+acc_decision_tree = round(decision_tree.score(Features, Labels) * 100, 2)
+print(acc_decision_tree)
+filename = 'decision_tree'+str(acc_decision_tree)+'.sav'
+pickle.dump(decision_tree, open(filename, 'wb'))
 
-# # Random Forest
-# random_forest = RandomForestClassifier(n_estimators=100)
-# random_forest.fit(X_train, Y_train)
+
+# Random Forest
+random_forest = RandomForestClassifier(n_estimators=100)
+random_forest.fit(Features, Labels)
 # Y_pred = random_forest.predict(X_test)
 # random_forest.score(X_train, Y_train)
-# acc_random_forest = round(random_forest.score(X_train, Y_train) * 100, 2)
-# print(acc_random_forest)
+acc_random_forest = round(random_forest.score(Features, Labels) * 100, 2)
+print(acc_random_forest)
+filename = 'random_forest'+str(acc_random_forest)+'.sav'
+pickle.dump(random_forest, open(filename, 'wb'))
 
 # models = pd.DataFrame({
 #     'Model': ['Support Vector Machines', 'KNN', 'Logistic Regression', 

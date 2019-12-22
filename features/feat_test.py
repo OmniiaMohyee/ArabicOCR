@@ -58,6 +58,8 @@ def getFeatureVector(cropped_img):
     char_size = np.sum(cropped_img == 0)
     b = char_size
     w = np.sum(cropped_img == 255)
+    if w ==0:
+        w=1
     FeatureVector.append(char_size) # add.1 char size/area #where the foregroung is the black
     FeatureVector.append(b/w) #2.black/white
     FeatureVector.append(horizontal_transitions(cropped_img)) # 3. horizontal transitions
