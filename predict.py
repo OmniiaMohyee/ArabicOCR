@@ -16,7 +16,7 @@ from features.feat_test import crop_image,getFeatureVector
 #Tasks
 #1- load model
 # load the model from disk
-filename = 'savedmodels/trial1/knn88.11.sav'
+filename = 'savedmodels/trial1/decision_tree99.0.sav'
 decision_tree = pickle.load(open(filename, 'rb'))
 # Y_pred = decision_tree.predict(X_test)
 # result = loaded_model.score(X_test, Y_test)

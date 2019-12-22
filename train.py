@@ -43,7 +43,7 @@ print(len(Features))
 #4- divide the dataset into training and test set -----> lesssaaaaaa
 #5- write the output of predict into a file ----->>>
 #6- save the model 
-folder ='savedmodels/trial1again/'
+folder ='savedmodels/trial2/'
 #####  ConvergenceWarning: lbfgs failed to converge (status=1): STOP: TOTAL NO. of ITERATIONS REACHED LIMIT.
 # #Logitic Regression 
 # logreg = LogisticRegression()
