@@ -25,15 +25,17 @@ Paths = list(Paths)
 Labels = list(Labels)
 Features =[]
 for path in Paths:
-
     img = cv2.imread(path)
-    # print(img.shape)
     img_grey = cv2.cvtColor(img,cv2.COLOR_RGB2GRAY)
     _, bw_img = cv2.threshold(img_grey,127,255,cv2.THRESH_BINARY) #convert to binary
     black_char = cv2.bitwise_not(bw_img) #back to black char
     cropped_img = crop_image(black_char)
-    Features.append(getFeatureVector(cropped_img)) 
-print(len(Features))
+    Features.append(getFeatureVector(cropped_img))
+max_list = np.max(Features,axis=0)
+print(max_list)
+for i in range(len(Features[0])):
+    Features[:][i] = Features[:][i] / max_list[i]
+
 
 
 #tasks
@@ -43,7 +45,7 @@ print(len(Features))
 #4- divide the dataset into training and test set -----> lesssaaaaaa
 #5- write the output of predict into a file ----->>>
 #6- save the model 
-folder ='savedmodels/trial2/'
+folder ='savedmodels/trial3/'
 #####  ConvergenceWarning: lbfgs failed to converge (status=1): STOP: TOTAL NO. of ITERATIONS REACHED LIMIT.
 # #Logitic Regression 
 # logreg = LogisticRegression()

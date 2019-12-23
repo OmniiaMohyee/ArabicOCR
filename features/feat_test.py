@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
-
+import math
+import operator
 
 # 1.exact width and height
 def crop_image(img):
@@ -67,12 +68,18 @@ def getFeatureVector(cropped_img):
     b = char_size
     w = np.sum(white)
     FeatureVector.append(char_size) # add.1 char size/area #where the foregroung is the black
-    FeatureVector.append(b/w) #2.black/white
+    if w ==0 :
+        FeatureVector.append(1)
+    else:
+        FeatureVector.append(b/w) #2.black/white
     FeatureVector.append(horizontal_transitions(cropped_img)) # 3. horizontal transitions
     FeatureVector.append(vertical_transitions(cropped_img)) # 4. Vertical transitions
     
     for i in range(4):
-        FeatureVector.append(black[i]/white[i])
+        if white[i] == 0:
+            FeatureVector.append(1)
+        else:
+            FeatureVector.append(black[i]/white[i])
         FeatureVector.append(black[i]/char_size) #add.2 distribution features: for each quadrat -> Q/A
     #distribution features: for halves
     FeatureVector.append((black[0]+black[1])/char_size) # U/A
@@ -81,7 +88,10 @@ def getFeatureVector(cropped_img):
     FeatureVector.append((black[1]+black[3])/char_size) # R/A
     for i in range(3):
         for j in range(i+1, 4):
-            FeatureVector.append(black[i]/black[j])
+            if black[j] ==0:
+                FeatureVector.append(1)
+            else:
+                FeatureVector.append(black[i]/black[j])
     (cx, cy), nu12, nu02, nu20 = contours_and_cetroid(cropped_img)
     FeatureVector.append(cx) #add.centroid may be helpful
     FeatureVector.append(cy)
@@ -90,7 +100,7 @@ def getFeatureVector(cropped_img):
     FeatureVector.append(nu20)
     z = Zernike_moment(cropped_img)
     FeatureVector.append(z)
-    print(FeatureVector)
+    #print(FeatureVector)
     return FeatureVector
 
 def contours_and_cetroid(img):
@@ -102,7 +112,7 @@ def contours_and_cetroid(img):
         cx = int(M['m10']/M['m00']) #get char centroid
         cy = int(M['m01']/M['m00'])
     else:
-        print("most probably there is error in segmentation, this is an empty image")
+        #print("most probably there is error in segmentation, this is an empty image")
         cx, cy = 0, 0
     return (cx, cy), M['nu12'], M['nu02'], M['nu20']
 

@@ -13,8 +13,8 @@ import numpy as np
 
 def build_association_file():
     # general intializations
-    data_points = glob.glob("../clean_dataset/scanned/b1/*.png")
-    labels = glob.glob('../clean_dataset/b1/*.txt')
+    data_points = glob.glob("../clean_dataset/scanned/scanned/*.png")
+    labels = glob.glob('../clean_dataset/text/*.txt')
     tot_right = 0
     tot_wrong = 0
     data_point_it = 0
