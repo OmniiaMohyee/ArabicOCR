@@ -13,15 +13,15 @@ import numpy as np
 
 def build_association_file():
     # general intializations
-    data_points = glob.glob("../clean_dataset/scanned/scanned/capr2.png")
-    labels = glob.glob('../clean_dataset/text/capr2.txt')
+    data_points = glob.glob("../clean_dataset/scanned/scanned/*.png")
+    labels = glob.glob('../clean_dataset/text/text/*.txt')
     tot_right = 0
     tot_wrong = 0
     data_point_it = 0
     text_chars_iter = 1  # for writing in csv file
     scanned_chars_iter = 0 # same
     #prepare output file
-    csv_file = open('dataset.csv', encoding='utf-8', mode='w')
+    csv_file = open('dataset_final.csv', encoding='utf-8', mode='w')
     writer = csv.DictWriter(csv_file, fieldnames=['char','path'])
     writer.writeheader()
 
@@ -41,6 +41,9 @@ def build_association_file():
         clean_img,clean_image_not_bin = preprocess.preproc(data_point) # pre-process image
         words = word_segment.word_seg(clean_img,clean_image_not_bin) # segment image into characters
         print("num of segmented words = ", len(words))
+        if len(words) != len(text):
+            data_point_it += 1
+            continue
         for word in words:
             scanned_chars_count = 0
             scanned_chars_iter = 0
@@ -63,16 +66,16 @@ def build_association_file():
         tot_right += right
         tot_wrong += wrong
         i+=1
-        if i>8:
+        if i>50:
             break
     csv_file.close()
     print("total right = ", tot_right)
     print("total wrong = ", tot_wrong)
    
    # encode character labels into numbers
-    df = pd.read_csv('dataset.csv')
+    df = pd.read_csv('dataset_final.csv')
     label_encoder = preprocessing.LabelEncoder() 
     df['code']= label_encoder.fit_transform(df['char']) # Encode labels in column 'char
-    df.to_csv('dataset.csv')
+    df.to_csv('dataset_final.csv')
 
-    np.save('label_encoder.npy', label_encoder.classes_)
+    np.save('label_encoder_final.npy', label_encoder.classes_)

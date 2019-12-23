@@ -446,7 +446,7 @@ def segment(image, words_iter):
 	chars.sort(key= lambda x :x[0])
 	chars = chars[::-1]
 	chars = [row[1] for row in chars]
-	cv2.imwrite("cnt/contoured."+str(words_iter)+".png",image)  
+	# cv2.imwrite("cnt/contoured."+str(words_iter)+".png",image)  
 
 	return chars
 # cs = segment(image)
