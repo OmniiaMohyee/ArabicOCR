@@ -9,7 +9,7 @@ from generalized_hough_demo import hough_match
 im_name = "c1.png"
 image = cv2.imread(im_name)
 
-def char_test_seen(deleted_indices,segmentation_points,image,character,thr):
+def char_test_seen(deleted_indices,segmentation_points,image,character,thr,p):
 	character = cv2.cvtColor(character, cv2.COLOR_RGB2GRAY)	
 	num_points = len(segmentation_points)
 	seen_cnt,_h= cv2.findContours(character, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -30,13 +30,14 @@ def char_test_seen(deleted_indices,segmentation_points,image,character,thr):
 		cont=cont[m]
 		hull2 = cv2.convexHull(cont)
 		match = cv2.matchShapes(seen_cnt,cont,1,0.0)
-		cv2.imwrite("cnt/"+str(i)+".png",section)
+		# cv2.imwrite("cnt/"+str(i)+".png",section)
 		matches.append([match,i])
 	if len(matches) == 0:
 		return
 
 	matches.sort(key =lambda x:x[0])
 	normalized_matches = matches
+	# print(p)
 	# print(normalized_matches)
 
 	k =0 
@@ -59,7 +60,7 @@ def char_test_seen(deleted_indices,segmentation_points,image,character,thr):
 	for r in to_remove:
 		if r in segmentation_points:
 			segmentation_points.remove(r)
-def char_test_saad(deleted_indices,segmentation_points,image,character,thr):
+def char_test_saad(deleted_indices,segmentation_points,image,character,thr,p):
 	character = cv2.cvtColor(character, cv2.COLOR_RGB2GRAY)	
 	num_points = len(segmentation_points)
 	saad_cnt,_h= cv2.findContours(character, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -80,14 +81,15 @@ def char_test_saad(deleted_indices,segmentation_points,image,character,thr):
 		cont=cont[m]
 		hull2 = cv2.convexHull(cont)
 		match = cv2.matchShapes(saad_cnt,cont,1,0.0)
-		cv2.imwrite("cnt/"+str(i)+".png",section)
+		# cv2.imwrite("cnt/"+str(i)+".png",section)
 		matches.append([match,i])
 	if len(matches) == 0:
 		return
 
 	matches.sort(key =lambda x:x[0])
 	normalized_matches = matches
-
+	# print(p)
+	# print(normalized_matches)
 	k =0 
 	for k in range(len(normalized_matches)):
 		index = normalized_matches[k][1]
@@ -107,6 +109,7 @@ def char_test_saad(deleted_indices,segmentation_points,image,character,thr):
 			segmentation_points.remove(r)
 
 def segment(image, words_iter):
+	# print(words_iter)	
 	(ys , xs , _)= image.shape
 	image = cv2.resize(image,(xs*5,ys*5), interpolation=cv2.INTER_AREA)
 
@@ -116,7 +119,7 @@ def segment(image, words_iter):
 	thresh = cv2.threshold(gray, 130, 255,cv2.THRESH_BINARY)[1]
 	thresh2 = cv2.threshold(gray, 100, 255,cv2.THRESH_BINARY)[1]
 
-	cv2.imwrite("cnt/thresh.png", thresh)
+	# cv2.imwrite("cnt/thresh.png", thresh)
 
 	edges = cv2.Canny(thresh,0,500)
 
@@ -404,32 +407,34 @@ def segment(image, words_iter):
 		# 		segmentation_points.remove(s)
 		deleted_indices = []
 		deleted_indices_saad = []
-
 		seen=cv2.imread('cnt/s2.png') # 2
-		char_test_seen(deleted_indices,segmentation_points,thresh,seen,0.5)
+		char_test_seen(deleted_indices,segmentation_points,thresh,seen,0.5,0)
 
 		seen2=cv2.imread('cnt/s6.png') # 6
-		char_test_seen(deleted_indices,segmentation_points,thresh,seen2,0.5)
+		char_test_seen(deleted_indices,segmentation_points,thresh,seen2,0.5,1)
 
 		seen3=cv2.imread('cnt/s24.png') #  1
-		char_test_seen(deleted_indices,segmentation_points,thresh,seen3,0.5)
+		char_test_seen(deleted_indices,segmentation_points,thresh,seen3,0.5,2)
 
-		seen4=cv2.imread('cnt/s9.png') # 1
-		char_test_seen(deleted_indices,segmentation_points,thresh,seen4,0.5)
+		seen4=cv2.imread('cnt/s33.png') # 1
+		char_test_seen(deleted_indices,segmentation_points,thresh,seen4,0.6,3)
 
 		seen5=cv2.imread('cnt/s23.png') # 1
-		char_test_seen(deleted_indices,segmentation_points,thresh,seen5,0.5)
+		char_test_seen(deleted_indices,segmentation_points,thresh,seen5,0.7,4)
 
 		seen6=cv2.imread('cnt/s35.png') # 1
-		char_test_seen(deleted_indices,segmentation_points,thresh,seen6,0.5)
+		char_test_seen(deleted_indices,segmentation_points,thresh,seen6,0.7,5)
 
 		seen7=cv2.imread('cnt/s36.png') # 1
-		char_test_seen(deleted_indices,segmentation_points,thresh,seen7,0.5)
+		char_test_seen(deleted_indices,segmentation_points,thresh,seen7,0.7,6)
+
+		# seen8=cv2.imread('cnt/s27.png') #  1
+		# char_test_seen(deleted_indices,segmentation_points,thresh,seen8,0.5,)
 
 		daad = cv2.imread("cnt/d1.png")
-		char_test_saad(deleted_indices_saad,segmentation_points,thresh,daad,0.5)
+		char_test_saad(deleted_indices_saad,segmentation_points,thresh,daad,0.5,0)
 		daad2 = cv2.imread("cnt/d2.png")
-		char_test_saad(deleted_indices_saad,segmentation_points,thresh,daad2,0.2)
+		char_test_saad(deleted_indices_saad,segmentation_points,thresh,daad2,0.24,1)
 
 		num_points = len(segmentation_points)
 		for i in range(1,num_points):
@@ -437,16 +442,17 @@ def segment(image, words_iter):
 			segment = segmentation_points[i]
 			x = segment[0]
 			y = segment[1]
-			shift = 5
+			shift = 30
 			if prev_point[0]!= segment[0]:
 				cv2.line(image,(int(x)+shift,int(y)-50),(int(x)+shift,int(y)+50),(0,0,255),1)
 				char = thresh2[:,prev_point[0]:segment[0]+shift]
 				chars.append([x,char])
+				# cv2.imwrite("cnt/contoured."+str(words_iter)+"."+str(i)+".png",char)  
 			prev_point = segment
 	chars.sort(key= lambda x :x[0])
 	chars = chars[::-1]
 	chars = [row[1] for row in chars]
-	cv2.imwrite("cnt/contoured."+str(words_iter)+".png",image)  
+	# cv2.imwrite("cnt/contoured."+str(words_iter)+".png",image)  
 
 	return chars
 # cs = segment(image)

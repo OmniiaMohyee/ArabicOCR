@@ -3,30 +3,21 @@ import numpy as np
 
 
 # 1.exact width and height
-# def crop_image(img):
-#     img_height, img_width = img.shape
-#     first_row = img_height
-#     first_col = img_width
-#     last_row = 0
-#     last_col = 0
-#     for i in range(img_height):
-#         for j in range(img_width):
-#             if img[i][j] == 0:
-#                 first_row = min(first_row, i)
-#                 first_col = min(first_col, j)
-#                 last_row = max(last_row, i)
-#                 last_col = max(last_col, j)
-#     cropped = img[first_row:last_row, first_col:last_col]
-#     # cv2.imshow("img",cropped)
-#     return cropped
-def crop_image(image): # --> thresholded image
-    # Mask of non-black pixels # works for white char on black background
-    white_char = cv2.bitwise_not(image)
-    mask = white_char > 0
-    coords = np.argwhere(mask)
-    x0, y0 = coords.min(axis=0)
-    x1, y1 = coords.max(axis=0) + 1
-    cropped = image[x0:x1, y0:y1]
+def crop_image(img):
+    img_height, img_width = img.shape
+    first_row = img_height
+    first_col = img_width
+    last_row = 0
+    last_col = 0
+    for i in range(img_height):
+        for j in range(img_width):
+            if img[i][j] == 0:
+                first_row = min(first_row, i)
+                first_col = min(first_col, j)
+                last_row = max(last_row, i)
+                last_col = max(last_col, j)
+    cropped = img[first_row:last_row, first_col:last_col]
+    # cv2.imshow("img",cropped)
     return cropped
 
 def horizontal_transitions(img):
@@ -63,16 +54,6 @@ def get_Regions(img):
 def getFeatureVector(cropped_img):
     FeatureVector = []
     height, width = cropped_img.shape
-    FeatureVector.append(height/width) #1. height/width
-    char_size = np.sum(cropped_img == 0)
-    b = char_size
-    w = np.sum(cropped_img == 255)
-    if w ==0:
-        w=1
-    FeatureVector.append(char_size) # add.1 char size/area #where the foregroung is the black
-    FeatureVector.append(b/w) #2.black/white
-    FeatureVector.append(horizontal_transitions(cropped_img)) # 3. horizontal transitions
-    FeatureVector.append(vertical_transitions(cropped_img)) # 4. Vertical transitions
     regions = get_Regions(cropped_img)
     black = []
     white = []
@@ -81,11 +62,17 @@ def getFeatureVector(cropped_img):
         w = np.sum(region == 255)
         black.append(b)
         white.append(w)
+    FeatureVector.append(height/width) #1. height/width
+    char_size = np.sum(black)
+    b = char_size
+    w = np.sum(white)
+    FeatureVector.append(char_size) # add.1 char size/area #where the foregroung is the black
+    FeatureVector.append(b/w) #2.black/white
+    FeatureVector.append(horizontal_transitions(cropped_img)) # 3. horizontal transitions
+    FeatureVector.append(vertical_transitions(cropped_img)) # 4. Vertical transitions
+    
     for i in range(4):
-        if white[i] != 0:
-            FeatureVector.append(black[i]/white[i])
-        else:
-            FeatureVector.append(1)
+        FeatureVector.append(black[i]/white[i])
         FeatureVector.append(black[i]/char_size) #add.2 distribution features: for each quadrat -> Q/A
     #distribution features: for halves
     FeatureVector.append((black[0]+black[1])/char_size) # U/A
@@ -94,15 +81,16 @@ def getFeatureVector(cropped_img):
     FeatureVector.append((black[1]+black[3])/char_size) # R/A
     for i in range(3):
         for j in range(i+1, 4):
-            if black[j] != 0:
-                FeatureVector.append(black[i]/black[j])
-            else:
-                FeatureVector.append(1)
-    num_contours, (cx, cy), nu = contours_and_cetroid(cropped_img)
-    # FeatureVector.append(num_contours) #add. may be helpful
+            FeatureVector.append(black[i]/black[j])
+    (cx, cy), nu12, nu02, nu20 = contours_and_cetroid(cropped_img)
     FeatureVector.append(cx) #add.centroid may be helpful
     FeatureVector.append(cy)
-    FeatureVector.append(nu) #add.3 moments
+    FeatureVector.append(nu12)
+    FeatureVector.append(nu02)
+    FeatureVector.append(nu20)
+    z = Zernike_moment(cropped_img)
+    FeatureVector.append(z)
+    print(FeatureVector)
     return FeatureVector
 
 def contours_and_cetroid(img):
@@ -116,24 +104,19 @@ def contours_and_cetroid(img):
     else:
         print("most probably there is error in segmentation, this is an empty image")
         cx, cy = 0, 0
-    return len(contours), (cx, cy), M['nu12']  # M['nu12'] normalized cetral moment
+    return (cx, cy), M['nu12'], M['nu02'], M['nu20']
 
-# if __name__ == "__main__":
-#     #read image
-#     img = cv2.imread('../tests/gem.png')
-#     img_gray = cv2.cvtColor(img,cv2.COLOR_RGB2GRAY) #black char
-#     # image_gray = cv2.bitwise_not(img_gray) #white char
-#     image_thresholded = cv2.threshold(img_gray, 127, 255, cv2.THRESH_BINARY)[1]
-#     cropped_img = crop_image(image_thresholded)
-#     cv2.imwrite("c2.png", cropped_img)
-#     FeatureVector= getFeatureVector(cropped_img)
-#     # thresholded = cv2.threshold(image_gray, 127, 255, cv2.THRESH_BINARY| cv2.THRESH_OTSU)[1]
-#     # _, markers = cv2.connectedComponents(thresholded)
-#     # print(np.amax(markers))
-
-#     # print("num of features:", len(FeatureVector))
-#     # print(FeatureVector)
-#     # mask = (cropped_img != 0 ) & (cropped_img != 255 )
-#     # print(cropped_img[mask])
-#     cv2.waitKey(0)
-#     cv2.destroyAllWindows()
+def Zernike_moment(img):
+    Vnm = 0
+    hight, width = img.shape
+    ch, cw = hight/2, width/2
+    d = math.sqrt(hight **2 + width**2)
+    for index, x in np.ndenumerate(img):
+        if x == 0 :
+            continue
+        vect = tuple(map(operator.sub, index, (ch, cw)))
+        rough = math.sqrt(vect[0]**2 + vect[1]**2)
+        Rnm = 2* rough**2
+        Vnm += Rnm
+    Anm = Vnm * 3 / 3.14
+    return Anm
