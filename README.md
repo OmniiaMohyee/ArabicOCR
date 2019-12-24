@@ -1,7 +1,7 @@
 # ArabicOCR
 Performing OCR on Arabic scanned documents.
 
-##Packages used:
+## Packages used:
 
 1. Numpy
 2. Scipy
