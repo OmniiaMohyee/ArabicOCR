@@ -35,9 +35,6 @@ max_list = np.max(Features,axis=0)
 print(max_list)
 for i in range(len(Features[0])):
     Features[:][i] = Features[:][i] / max_list[i]
-
-
-
 #tasks
 #1- read image from path
 #2- read labels and encode them

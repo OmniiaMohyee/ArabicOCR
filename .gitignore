@@ -5,3 +5,4 @@ chars/*
 features/__pycache__/*
 **/__pycache__
 cnt/*
+*.csv
